@@ -1,0 +1,1930 @@
+next
+----
+* docker
+* git (book, links)
+
+python books
+------------
+https://pythonbooks.org/
+https://wiki.python.org/moin/AdvancedBooks
+https://wiki.python.org/moin/ReferenceBooks
+
+https://docs.python.org/3/using/index.html               # python setup and usage
+https://docs.python.org/3/using/windows.html             # Python on Windows
+https://docs.python.org/3/installing/index.html          # installing python modules
+https://docs.python.org/3/distributing/index.html        # distributing python modules
+https://docs.python.org/3/faq/index.html                 # FAQ
+https://wiki.python.org/moin/PythonSpeed/PerformanceTips # performance tips
+
+https://docs.python.org/3/library/stdtypes.html                       # standard types
+https://docs.python.org/3/tutorial/datastructures.html                # data structures
+https://docs.python.org/3/library/collections.html#module-collections # collections
+https://docs.python.org/3/library/keyword.html#module-keyword         # keywords
+https://docs.python.org/3/library/dataclasses.html#module-dataclasses # dataclasses
+
+orfer of methods in a class
+---------------------------
+Interfaces first: Public methods and Python magic functions define the interface of the class. Most of the time, you and
+other developers want to use a class rather than change it. Thus they will be interested in the interface of that class.
+Putting it first in the source code avoids scrolling through implementation details you don't care about.
+
+Properties, magic methods, public methods: It's hard to define the best order between those three, which are all part of
+the interface of the class. As Ethan Furman says, it's most important to stick with one system for the whole project.
+Generally, people expect __init__() to the best first function in the class so I follow up with the other magic methods
+right below.
+
+Reading order: Basically, there are two ways to tell a story: Bottom-up or top-down. By putting high-level functions first,
+a developer can get a rough understanding of the class by reading the first couple of lines. Otherwise, one would have to
+read the whole class in order to get any understanding of the class and most developers don't have the time for that. As a
+rule of thumb, put methods above all methods called from their body.
+
+Class methods and static methods: Usually, this is implied by the reading order explained above. Normal methods can call
+all methods times and thus come first. Class methods can only call class methods and static methods and come next. Static
+methods cannot call other methods of the class and come last.
+
+# seq: str, tuple, list, range
+
+BUILD-IN FUNCTIONS
+------------------
+https://docs.python.org/3/library/functions.html
+
+Some useful ones: abs, chr, dict, enumerate, eval, float, int, input, isinstance, len, list, max, min, open, ord, pow, print, range, repr, reversed, round, set, sorted, str, sum, tuple, type, zip, hasattr
+
+data model
+----------
+https://docs.python.org/3/reference/datamodel.html
+
+explanation of timeit globals
+-----------------------------
+https://stackoverflow.com/questions/44890932/using-the-globals-argument-of-timeit-timeit
+
+File I/O
+--------
+https://docs.python.org/3/library/io.html#module-io               # input/output
+https://docs.python.org/3/library/codecs.html#standard-encodings  # text file encodings
+https://docs.python.org/3/library/fileinput.html#module-fileinput # create loops over stdin or file list
+https://docs.python.org/3/library/os.path.html#module-os.path     # manipulate paths
+https://docs.python.org/3/library/pathlib.html#module-pathlib     # filesystem paths for different OSes
+https://docs.python.org/3/library/tempfile.html#module-tempfile   # temp files and dirs
+https://docs.python.org/3/library/shutil.html#module-shutil       # operations on files and collections of files
+https://docs.python.org/3/library/os.html#module-os               # operations on individual files
+https://docs.python.org/3/tutorial/inputoutput.html#saving-structured-data-with-json # save structured data with json
+
+assert statement (useful in debugging) 
+--------------------------------------
+https://docs.python.org/3/reference/simple_stmts.html#grammar-token-python-grammar-assert_stmt
+
+sorting
+-------
+https://wiki.python.org/moin/HowTo/Sorting
+
+hasattr example
+---------------
+p = Point() # Point is a class
+hasattr(p, 'x') # returns bool, True if object p has attr 'x'
+
+vars example
+------------
+p = Point(3, 4)
+vars(p) # prints attributes as dict of {name, value}
+{'y': 4, 'x': 3}
+
+getattr example
+---------------
+def print_attributes(obj):
+	for attr in vars(obj):
+		print(attr, getattr(obj, attr))
+
+print_attributes traverses the dictionary and prints each attribute name and its corresponding value.
+The built-in function getattr takes an object and an attribute name (as a string) and returns the attribute’s value.
+
+get line separator
+------------------
+import os
+print(os.linesep)
+
+INITIALIZATION
+--------------
+>>> l = [''] * 8 # careful! contains 8 references of empty string!
+>>> l
+['', '', '', '', '', '', '', '']
+
+>>> t = ('',) * 8 # careful! contains 8 references of empty string!
+>>> t
+('', '', '', '', '', '', '', '')
+
+# at the end of every module place all the statements (if any) under the 'if' below
+# if run as a script, __name__ will be equal to '__main__' and the statements under
+# the if will be executed
+if __name__ == '__main__': 
+
+RANGES
+------
+>>> for i in  reversed(range(2,10,2)): # for i in range(10, 2, -2):
+...     print(i)
+... 
+8
+6
+4
+2
+
+>>> for i in range(-5,0,2):
+...     print(i)
+... 
+-5
+-3
+-1
+
+>>> for i in range(-1,-6,-2): 
+...     print(i)
+... 
+-1
+-3
+-5
+
+CONVERT FROM ONE SEQUENCE AND DICTIONARY TO ANOTHER
+---------------------------------------------------
+>>> tuple('dsfsdf') # works for list('dsfsdf') as well
+('d', 's', 'f', 's', 'd', 'f')
+
+>>> tuple({'a':1, 'b':2}) # works for list({'a':1, 'b':2}) as well
+('a', 'b')
+
+>>> d = {'a':1, 'b':2}
+>>> tuple(d.items()) # works for list(d.items()) as well
+(('a', 1), ('b', 2))
+
+>>> tuple(d.values()) # works for list(d.values()) as well
+(1, 2)
+
+STRINGS
+-------
+>>> import string
+>>> word = 'abc,. \n'.strip(string.punctuation + string.whitespace)
+>>> word
+'abc'
+
+String literals
+---------------
+ 'Hello, world!'
+r'Hello, world!' # raw string literal
+u'Hello, world!' # unicode string literal
+b'Hello, world!' # binary string literal
+
+If you don’t want characters prefaced by \ to be interpreted as special characters,
+you can use raw strings by adding an r before the first quote:
+
+>>>
+>>> print('C:\some\name')  # here \n means newline!
+C:\some
+ame
+>>> print(r'C:\some\name')  # note the r before the quote
+C:\some\name
+
+String literals can span multiple lines. One way is using triple-quotes: """..."""
+or '''...'''. End of lines are automatically included in the string, but it’s possible
+to prevent this by adding a \ at the end of the line. The following example:
+
+print("""\
+Usage: thingy [OPTIONS]
+     -h                        Display this usage message
+     -H hostname               Hostname to connect to
+""")
+produces the following output (note that the initial newline is not included):
+
+Usage: thingy [OPTIONS]
+     -h                        Display this usage message
+     -H hostname               Hostname to connect to
+
+string output
+-------------
+When you don’t need fancy output but just want a quick display of some variables for
+debugging purposes, you can convert any value to a string with the repr() or str()
+functions.
+
+repr(string) is useful for debugging strings as it prints formatting characters.
+This can be helpful for debugging.
+
+>>> s = "Hello,\t world!\n" 
+>>> repr(s)
+"'Hello,\\t world!\\n'"
+
+Modifiers can be used to convert the value before it is formatted. '!a' applies ascii(),
+'!s' applies str(), and '!r' applies repr():
+
+>>> animals = 'eels'
+>>> print(f'My hovercraft is full of {animals}.')
+My hovercraft is full of eels.
+>>> print(f'My hovercraft is full of {animals!r}.')
+My hovercraft is full of 'eels'.
+
+iterators
+---------
+Sequence unpacking also supports iterators: if you know an iterator will return N elements, you can unpack them into an
+N-tuple:
+
+L = [1, 2, 3]
+iterator = iter(L)
+a, b, c = iterator
+a, b, c
+(1, 2, 3)
+
+If an iterator is cyclical then functions and operators that have an iterator as a argument will never return.
+For example, max(), min(), in, not in
+
+Format Specification Mini-Language
+----------------------------------
+https://docs.python.org/3/library/string.html#format-specification-mini-language
+
+generators
+----------
+g = (x**2 for x in range(5))
+print(g)       # prints address of generator object
+print(next(g)) # prints 0
+print(next(g)) # prints 1
+for val in g:
+    print(val) # prints 4, 9, 16
+next(g)        # raises StopIteration
+
+Generator expressions are often used with functions like sum, max and min:
+>>> sum(x**2 for x in range(5))
+30
+
+With a list comprehension, you get back a Python list. Generator expressions return an iterator that computes the values
+as necessary, not needing to materialize all the values at once. This means that list comprehensions aren’t useful if
+you’re working with iterators that return an infinite stream or a very large amount of data. Generator expressions are
+preferable in these situations.
+
+Generator expressions always have to be written inside parentheses, but the parentheses signalling a function call also
+count. If you want to create an iterator that will be immediately passed to a function you can write:
+
+total = sum(n for n in [1,2,3,4,5,6,7,8,9] if n % 2)
+
+any (search for True in an iterable and exit if found)
+------------------------------------------------------
+>>> any([False, False, True])
+True
+>>> any(letter == 't' for letter in 'monty') # generator expression, same as 't' in 'monty'
+True
+
+Data Structures
+---------------
+You might have noticed that methods like insert, remove or sort that only modify the list
+have no return value printed – they return the default None. This is a design principle
+for all mutable data structures in Python.
+
+Another thing you might notice is that not all data can be sorted or compared. For
+instance, [None, 'hello', 10] doesn’t sort because integers can’t be compared to strings
+and None can’t be compared to other types. Also, there are some types that don’t have a
+defined ordering relation. For example, 3+4j < 5+7j isn’t a valid comparison.
+
+Counters
+--------
+A Counter is like a set, except that if an element appears more than
+once, the Counter keeps track of how many times it appears.
+
+You can initialize a Counter with a string, list,
+or anything else that supports iteration:
+>>> from collections import Counter
+>>> count = Counter('parrot')
+>>> count
+Counter({'r': 2, 't': 1, 'o': 1, 'p': 1, 'a': 1})
+
+As in dictionaries, the keys have to be hashable.
+Unlike dictionaries, Counters don’t raise an exception if you access
+an element that doesn’t appear. Instead, they return 0:
+>>> count['d']
+0
+
+they provide an often-useful method, most_common, which
+returns a list of value-frequency pairs, sorted from most common to
+least:
+>>> count = Counter('parrot')
+>>> for val, freq in count.most_common(3):
+... print(val, freq)
+r 2
+p 1
+a 1
+
+defaultdict
+-----------
+The collections module also provides defaultdict, which is
+like a dictionary except that if you access a key that doesn’t exist, it
+can generate a new value on the fly.
+
+When you create a defaultdict, you provide a function that’s
+used to create new values. The built-in functions that create lists,
+sets, and other types can be used as factories:
+>>> from collections import defaultdict
+>>> d = defaultdict(list)
+>>> d['new key'].append('new_value')
+
+with ordinary dict that would be
+>>> d = {}; d.setdefault('new key', []).append('new_value')
+
+which means that [] (the list ctor) is called every time setdefault is called.
+With defaultdict the list ctor is called only when a new key is added.
+
+namedtuple
+----------
+from collections import namedtuple
+Point = namedtuple('Point', ['x', 'y'])
+
+The return value from namedtuple is a class object:
+>>> Point
+<class '__main__.Point'>
+
+Point automatically provides methods like __init__ and
+__str__ so you don’t have to write them.
+
+To create a Point object, you use the Point class as a function:
+>>> p = Point(1, 2)
+>>> p
+Point(x=1, y=2)
+
+You can access the elements of the named tuple by name:
+>>> p.x, p.y
+(1, 2)
+
+But you can also treat a named tuple as a tuple:
+>>> p[0], p[1]
+(1, 2)
+>>> x, y = p
+>>> x, y
+(1, 2)
+
+You might decide later that you want to add methods to a named tuple. In that
+case, you could define a new class that inherits from the named tuple:
+
+class Pointier(Point):
+# add more methods here
+
+If you have a dictionary of keywords and values, you can use the
+scatter operator, **, to call a function:
+>>> d = dict(x=1, y=2) # dict(x:1, y:2) SyntaxError
+>>> Point(**d)
+Point(x=1, y=2)
+
+python debugger
+---------------
+https://docs.python.org/3/library/pdb.html
+
+_ char
+------
+In interactive mode, the last printed expression is assigned to the variable _.
+This variable should be treated as read-only by the user. Don’t explicitly assign
+a value to it — you would create an independent local variable with the same name
+masking the built-in variable with its magic behavior.
+
+dictionary copy
+---------------
+Code that modifies a collection while iterating over that same collection can be
+tricky to get right. Instead, it is usually more straight-forward to loop over a
+copy of the collection:
+
+# Create a sample collection
+users = {'Hans': 'active', 'Éléonore': 'inactive', '景太郎': 'active'}
+
+# Strategy:  Iterate over a copy
+for user, status in users.copy().items():
+    if status == 'inactive':
+        del users[user]
+
+else Clauses on Loops
+---------------------
+Loop statements may have an else clause; it is executed when the loop terminates through
+exhaustion of the iterable (for) or when the condition becomes false (while), but not when
+the loop is terminated by a break statement.
+
+match statement
+---------------
+The simplest form compares a subject value against one or more literals:
+
+def http_error(status):
+    match status:
+        case 400:
+            return "Bad request"
+        case 404:
+            return "Not found"
+        case 418:
+            return "I'm a teapot"
+        case _:
+            return "Something's wrong with the internet"
+
+Note the last block: the “variable name” _ acts as a wildcard and never fails to match.
+If no case matches, none of the branches is executed.
+
+You can combine several literals in a single pattern using | (“or”):
+
+case 401 | 403 | 404:
+    return "Not allowed"
+
+Patterns can look like unpacking assignments, and can be used to bind variables:
+
+# point is an (x, y) tuple
+match point:
+    case (0, 0):
+        print("Origin")
+    case (0, y):
+        print(f"Y={y}")
+    case (x, 0):
+        print(f"X={x}")
+    case (x, y):
+        print(f"X={x}, Y={y}")
+    case _:
+        raise ValueError("Not a point")
+
+If you are using classes to structure your data you can use the class name followed by
+an argument list resembling a constructor, but with the ability to capture attributes
+into variables:
+
+class Point:
+    x: int
+    y: int
+
+def where_is(point):
+    match point:
+        case Point(x=0, y=0):
+            print("Origin")
+        case Point(x=0, y=y):
+            print(f"Y={y}")
+        case Point(x=x, y=0):
+            print(f"X={x}")
+        case Point():
+            print("Somewhere else")
+        case _:
+            print("Not a point")
+
+Patterns can be arbitrarily nested. For example, if we have a short list of points, we
+could match it like this:
+
+match points:
+    case []:
+        print("No points")
+    case [Point(0, 0)]:
+        print("The origin")
+    case [Point(x, y)]:
+        print(f"Single point {x}, {y}")
+    case [Point(0, y1), Point(0, y2)]:
+        print(f"Two on the Y axis at {y1}, {y2}")
+    case _:
+        print("Something else")
+
+We can add an if clause to a pattern, known as a “guard”. If the guard is false, match
+goes on to try the next case block. Note that value capture happens before the guard is
+evaluated:
+
+match point:
+    case Point(x, y) if x == y:
+        print(f"Y=X at {x}")
+    case Point(x, y):
+        print(f"Not on the diagonal")
+
+Subpatterns may be captured using the as keyword:
+
+case (Point(x1, y1), Point(x2, y2) as p2):
+
+Defining Functions
+------------------
+The execution of a function introduces a new symbol table used for the local variables
+of the function. More precisely, all variable assignments in a function store the value
+in the local symbol table; whereas variable references first look in the local symbol
+table, then in the local symbol tables of enclosing functions, then in the global symbol
+table, and finally in the table of built-in names. Thus, global variables and variables
+of enclosing functions cannot be directly assigned a value within a function (unless,
+for global variables, named in a global statement, or, for variables of enclosing
+functions, named in a nonlocal statement), although they may be referenced.
+
+In fact, even functions without a return statement do return a value, albeit a rather
+boring one. This value is called None (it’s a built-in name).
+
+The default values are evaluated at the point of function definition in the defining
+scope, so that
+
+i = 5
+
+def f(arg=i):
+    print(arg)
+
+i = 6
+f()
+will print 5.
+
+Important warning: The default value is evaluated only once. This makes a difference
+when the default is a mutable object such as a list, dictionary, or instances of most
+classes. For example, the following function accumulates the arguments passed to it on
+subsequent calls:
+
+def f(a, L=[]):
+    L.append(a)
+    return L
+
+print(f(1))
+print(f(2))
+print(f(3))
+This will print
+
+[1]
+[1, 2]
+[1, 2, 3]
+
+If you don’t want the default to be shared between subsequent calls, you can write the
+function like this instead:
+
+def f(a, L=None):
+    if L is None:
+        L = []
+    L.append(a)
+    return L
+
+In a function call, keyword arguments must follow positional arguments. All the keyword
+arguments passed must match one of the arguments accepted by the function.
+
+When a final formal parameter of the form **name is present, it receives a dictionary
+(see Mapping Types — dict) containing all keyword arguments except for those
+corresponding to a formal parameter. This may be combined with a formal parameter of the
+form *name (described in the next subsection) which receives a tuple containing the
+positional arguments beyond the formal parameter list. (*name must occur before **name.)
+For example, if we define a function like this:
+
+def cheeseshop(kind, *arguments, **keywords):
+    print("-- Do you have any", kind, "?")
+    print("-- I'm sorry, we're all out of", kind)
+    for arg in arguments:
+        print(arg)
+    print("-" * 40)
+    for kw in keywords:
+        print(kw, ":", keywords[kw])
+
+It could be called like this:
+
+cheeseshop("Limburger", "It's very runny, sir.",
+           "It's really very, VERY runny, sir.",
+           shopkeeper="Michael Palin",
+           client="John Cleese",
+           sketch="Cheese Shop Sketch")
+
+and of course it would print:
+
+-- Do you have any Limburger ?
+-- I'm sorry, we're all out of Limburger
+It's very runny, sir.
+It's really very, VERY runny, sir.
+----------------------------------------
+shopkeeper : Michael Palin
+client : John Cleese
+sketch : Cheese Shop Sketch
+
+Note that the order in which the keyword arguments are printed is guaranteed to match the
+order in which they were provided in the function call.
+
+By default, arguments may be passed to a Python function either by position or explicitly
+by keyword. For readability and performance, it makes sense to restrict the way arguments
+can be passed so that a developer need only look at the function definition to determine
+if items are passed by position, by position or keyword, or by keyword.
+
+A function definition may look like:
+
+def f(pos1, pos2, /, pos_or_kwd, *, kwd1, kwd2):
+      ----------     ----------     ----------
+        |             |                  |
+        |        Positional or keyword   |
+        |                              Keyword only
+      Positional only
+
+where / and * are optional. If used, these symbols indicate the kind of parameter by how
+the arguments may be passed to the function: positional-only, positional-or-keyword, and
+keyword-only. Keyword parameters are also referred to as named parameters.
+
+If / and * are not present in the function definition, arguments may be passed to a
+function by position or by keyword.
+
+Looking at this in a bit more detail, it is possible to mark certain parameters as
+positional-only. If positional-only, the parameters’ order matters, and the parameters
+cannot be passed by keyword. Positional-only parameters are placed before a /
+(forward-slash). The / is used to logically separate the positional-only parameters from
+the rest of the parameters. If there is no / in the function definition, there are no
+positional-only parameters.
+
+Parameters following the / may be positional-or-keyword or keyword-only.
+
+To mark parameters as keyword-only, indicating the parameters must be passed by keyword
+argument, place an * in the arguments list just before the first keyword-only parameter.
+
+Finally, consider this function definition which has a potential collision between the
+positional argument 'name' and **kwds which has 'name' as a key:
+
+def foo(name, **kwds):
+    return 'name' in kwds
+
+There is no possible call that will make it return True as the keyword 'name' will always
+bind to the first parameter. For example:
+
+>>> foo(1, **{'name': 2})
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: foo() got multiple values for argument 'name'
+>>>
+
+But using / (positional only arguments), it is possible since it allows name as a
+positional argument and 'name' as a key in the keyword arguments:
+
+def foo(name, /, **kwds):
+    return 'name' in kwds
+>>> foo(1, **{'name': 2})
+True
+
+In other words, the names of positional-only parameters can be used in **kwds without
+ambiguity.
+
+>>> list(range(3, 6))            # normal call with separate arguments
+[3, 4, 5]
+>>> args = [3, 6]
+>>> list(range(*args))            # call with arguments unpacked from a list
+[3, 4, 5]
+
+In the same fashion, dictionaries can deliver keyword arguments with the ** operator:
+
+>>> def parrot(voltage, state='a stiff', action='voom'):
+...     print("-- This parrot wouldn't", action, end=' ')
+...     print("if you put", voltage, "volts through it.", end=' ')
+...     print("E's", state, "!")
+...
+>>> d = {"voltage": "four million", "state": "bleedin' demised", "action": "VOOM"}
+>>> parrot(**d)
+-- This parrot wouldn't VOOM if you put four million volts through it. E's bleedin' demised !
+
+Small anonymous functions can be created with the lambda keyword. This function returns
+the sum of its two arguments: lambda a, b: a+b. Lambda functions can be used wherever
+function objects are required. They are syntactically restricted to a single expression.
+Semantically, they are just syntactic sugar for a normal function definition. Like nested
+function definitions, lambda functions can reference variables from the containing scope:
+
+>>>
+>>> def make_incrementor(n):
+...     return lambda x: x + n # return a function!
+...
+>>> f = make_incrementor(42)
+>>> f(0)
+42
+>>> f(1)
+43
+
+The above example uses a lambda expression to return a function. Another use is to pass
+a small function as an argument:
+
+>>>
+>>> pairs = [(1, 'one'), (2, 'two'), (3, 'three'), (4, 'four')]
+>>> pairs.sort(key=lambda pair: pair[1])
+>>> pairs
+[(4, 'four'), (1, 'one'), (3, 'three'), (2, 'two')]
+
+list comprehensions
+-------------------
+A list comprehension consists of brackets containing an expression followed by a for
+clause, then zero or more for or if clauses. The result will be a new list resulting from
+evaluating the expression in the context of the for and if clauses which follow it. For
+example, this listcomp combines the elements of two lists if they are not equal:
+
+>>> [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
+[(1, 3), (1, 4), (2, 3), (2, 1), (2, 4), (3, 1), (3, 4)]
+
+If the expression is a tuple (e.g. the (x, y) in the previous example), it must be
+parenthesized.
+
+Nested List Comprehensions
+--------------------------
+Consider the following example of a 3x4 matrix implemented as a list of 3 lists of length
+4:
+
+>>> matrix = [
+...     [1, 2, 3, 4],
+...     [5, 6, 7, 8],
+...     [9, 10, 11, 12],
+... ]
+
+The following list comprehension will transpose rows and columns:
+
+>>> [[row[i] for row in matrix] for i in range(4)]
+[[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
+
+The zip() function would do a great job for this use case:
+
+>>> list(zip(*matrix))
+[(1, 5, 9), (2, 6, 10), (3, 7, 11), (4, 8, 12)]
+
+This iterator is intended to be used with iterables that are all of the same length. If the iterables are of different
+lengths, the resulting stream will be the same length as the shortest iterable.
+
+zip(['a', 'b'], (1, 2, 3)) => ('a', 1), ('b', 2)
+
+You should avoid doing this, though, because an element may be taken from the longer iterators and discarded. This means
+you can’t go on to use the iterators further because you risk skipping a discarded element.
+
+The del statement
+-----------------
+The pop() method returns a value, del doesn't. The del statement can also be used to
+remove slices from a list or clear the entire list. For example:
+
+>>> a = [-1, 1, 66.25, 333, 333, 1234.5]
+>>> del a[0]
+>>> a
+[1, 66.25, 333, 333, 1234.5]
+>>> del a[2:4]
+>>> a
+[1, 66.25, 1234.5]
+>>> del a[:]
+>>> a
+[]
+
+del can also be used to delete entire variables:
+
+>>> del a
+Referencing the name a hereafter is an error (at least until another value is assigned to it).
+
+tuples
+------
+A tuple with one item is constructed by following a value with a comma.
+
+>>> singleton = 'hello',    # <-- note trailing comma
+>>> len(singleton)
+1
+>>> singleton
+('hello',)
+
+The statement t = 12345, 54321, 'hello!' is an example of tuple packing: the values
+12345, 54321 and 'hello!' are packed together in a tuple. The reverse operation is also
+possible:
+
+>>> x, y, z = t
+
+Sets
+----
+Similarly to list comprehensions, set comprehensions are also supported:
+
+>>> a = {x for x in 'abracadabra' if x not in 'abc'}
+>>> a
+{'r', 'd'}
+
+Using set() on a sequence eliminates duplicate elements. The use of sorted() in
+combination with set() over a sequence is an idiomatic way to loop over unique elements
+of the sequence in sorted order.
+
+>>> basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
+>>> for f in sorted(set(basket)):
+...     print(f)
+...
+apple
+banana
+orange
+pear
+
+dictionaries
+------------
+Performing list(d) on a dictionary returns a list of all the keys used in the dictionary,
+in insertion order.
+
+The dict() constructor builds dictionaries directly from sequences of key-value pairs:
+
+>>> dict([('sape', 4139), ('guido', 4127), ('jack', 4098)])
+{'sape': 4139, 'guido': 4127, 'jack': 4098}
+
+In addition, dict comprehensions can be used to create dictionaries from arbitrary key
+and value expressions:
+
+>>> {x: x**2 for x in (2, 4, 6)}
+{2: 4, 4: 16, 6: 36}
+When the keys are simple strings, it is sometimes easier to specify pairs using keyword
+arguments:
+
+>>> dict(sape=4139, guido=4127, jack=4098)
+{'sape': 4139, 'guido': 4127, 'jack': 4098}
+
+conditions
+----------
+It is possible to assign the result of a comparison or other Boolean expression to a
+variable. For example,
+
+>>> string1, string2, string3 = '', 'Trondheim', 'Hammer Dance'
+>>> non_null = string1 or string2 or string3
+>>> non_null
+'Trondheim'
+
+modules
+-------
+Within a module, the module’s name (as a string) is available as the value of the global
+variable __name__.
+
+>>> import fibo
+If you intend to use a function often you can assign it to a local name:
+
+>>> fib = fibo.fib
+>>> fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+A module can contain executable statements as well as function definitions. These
+statements are intended to initialize the module. They are executed only the first time
+the module name is encountered in an import statement.
+
+Each module has its own private symbol table, which is used as the global symbol table by
+all functions defined in the module. Thus, the author of a module can use global
+variables in the module without worrying about accidental clashes with a user’s global
+variables. On the other hand, if you know what you are doing you can touch a module’s
+global variables with the same notation used to refer to its functions, modname.itemname.
+
+There is a variant of the import statement that imports names from a module directly into
+the importing module’s symbol table. For example:
+
+>>> from fibo import fib, fib2
+>>> fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+This does not introduce the module name from which the imports are taken in the local
+symbol table (so in the example, fibo is not defined).
+
+There is even a variant to import all names that a module defines:
+
+>>> from fibo import *
+>>> fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+This imports all names except those beginning with an underscore (_). In most cases
+Python programmers do not use this facility since it introduces an unknown set of names
+into the interpreter, possibly hiding some things you have already defined.
+
+Note that in general the practice of importing * from a module or package is frowned upon,
+since it often causes poorly readable code. However, it is okay to use it to save typing
+in interactive sessions.
+
+If the module name is followed by as, then the name following as is bound directly to
+the imported module.
+
+>>> import fibo as fib
+>>> fib.fib(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+It can also be used when importing functions only with similar effects:
+
+>>> from fibo import fib as fibonacci
+>>> fibonacci(500)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+
+Note For efficiency reasons, each module is only imported once per interpreter session.
+Therefore, if you change your modules, you must restart the interpreter – or, if it’s
+just one module you want to test interactively, use importlib.reload(), e.g.
+import importlib; importlib.reload(modulename).
+
+When you run a Python module with
+
+python fibo.py <arguments>
+
+the code in the module will be executed, just as if you imported it, but with the
+__name__ set to "__main__".
+
+This is often used either to provide a convenient user interface to a module, or for
+testing purposes (running the module as a script executes a test suite).
+
+When a module named spam is imported, the interpreter first searches for a built-in
+module with that name. If not found, it then searches for a file named spam.py in a list
+of directories given by the variable sys.path. sys.path is initialized from these
+locations:
+
+* The directory containing the input script (or the current directory when no file is
+  specified).
+* PYTHONPATH (a list of directory names, with the same syntax as the shell variable PATH).
+* The installation-dependent default (by convention including a site-packages directory,
+  handled by the site module).
+
+Note On file systems which support symlinks, the directory containing the input script is
+calculated after the symlink is followed. In other words the directory containing the
+symlink is not added to the module search path.
+
+After initialization, Python programs can modify sys.path. The directory containing the
+script being run is placed at the beginning of the search path, ahead of the standard
+library path. This means that scripts in that directory will be loaded instead of modules
+of the same name in the library directory. This is an error unless the replacement is
+intended.
+
+To speed up loading modules, Python caches the compiled version of each module in the
+__pycache__ directory under the name module.version.pyc, where the version encodes the
+format of the compiled file; it generally contains the Python version number. For
+example, in CPython release 3.3 the compiled version of spam.py would be cached as
+__pycache__/spam.cpython-33.pyc. This naming convention allows compiled modules from
+different releases and different versions of Python to coexist.
+
+Python checks the modification date of the source against the compiled version to see if
+it’s out of date and needs to be recompiled. This is a completely automatic process.
+Also, the compiled modules are platform-independent, so the same library can be shared
+among systems with different architectures.
+
+Python does not check the cache in two circumstances. First, it always recompiles and
+does not store the result for the module that’s loaded directly from the command line.
+Second, it does not check the cache if there is no source module. To support a
+non-source (compiled only) distribution, the compiled module must be in the source
+directory, and there must not be a source module.
+
+Some tips for experts:
+
+* You can use the -O or -OO switches on the Python command to reduce the size of a
+  compiled module. The -O switch removes assert statements, the -OO switch removes both
+  assert statements and __doc__ strings. Since some programs may rely on having these
+  available, you should only use this option if you know what you’re doing. “Optimized”
+  modules have an "opt-" tag and are usually smaller. Future releases may change the
+  effects of optimization.
+* A program doesn’t run any faster when it is read from a .pyc file than when it is
+  read from a .py file; the only thing that’s faster about .pyc files is the speed with
+  which they are loaded.
+* The module compileall can create .pyc files for all modules in a directory.
+* There is more detail on this process, including a flow chart of the decisions, in PEP
+  3147.
+
+One particular module deserves some attention: sys, which is built into every Python
+interpreter. The variables sys.ps1 and sys.ps2 define the strings used as primary and
+secondary prompts:
+
+>>> import sys
+>>> sys.ps1
+'>>> '
+>>> sys.ps2
+'... '
+>>> sys.ps1 = 'C> '
+C> print('Yuck!')
+Yuck!
+C>
+
+These two variables are only defined if the interpreter is in interactive mode.
+
+Module objects have a secret read-only attribute called __dict__ which returns the
+dictionary used to implement the module’s namespace; the name __dict__ is an attribute
+but not a global name. Obviously, using this violates the abstraction of namespace
+implementation, and should be restricted to things like post-mortem debuggers.
+
+The dir() Function
+------------------
+The built-in function dir() is used to find out which names a module defines. It returns
+a sorted list of strings:
+
+>>> import fibo, sys
+>>> dir(fibo)
+['__name__', 'fib', 'fib2']
+>>> dir(sys)  
+# will print an unbelievably long list of names in sys
+
+Without arguments, dir() lists the names you have defined currently:
+
+>>> a = [1, 2, 3, 4, 5]
+>>> import fibo
+>>> fib = fibo.fib
+>>> dir()
+['__builtins__', '__name__', 'a', 'fib', 'fibo', 'sys']
+
+Note that it lists all types of names: variables, modules, functions, etc.
+
+dir() does not list the names of built-in functions and variables. If you want a list of
+those, they are defined in the standard module builtins:
+
+>>> import builtins
+>>> dir(builtins)  
+# will print an unbelievably long list of names in builtins
+
+Packages
+--------
+Packages are a way of structuring Python’s module namespace by using “dotted module
+names”. For example, the module name A.B designates a submodule named B in a package
+named A. Just like the use of modules saves the authors of different modules from having
+to worry about each other’s global variable names, the use of dotted module names saves
+the authors of multi-module packages like NumPy or Pillow from having to worry about each
+other’s module names.
+
+Suppose you want to design a collection of modules (a “package”) for the uniform handling
+of sound files and sound data. There are many different sound file formats (usually
+recognized by their extension, for example: .wav, .aiff, .au), so you may need to create
+and maintain a growing collection of modules for the conversion between the various file
+formats. There are also many different operations you might want to perform on sound data
+(such as mixing, adding echo, applying an equalizer function, creating an artificial
+stereo effect), so in addition you will be writing a never-ending stream of modules to
+perform these operations. Here’s a possible structure for your package (expressed in
+terms of a hierarchical filesystem):
+
+sound/                          Top-level package
+      __init__.py               Initialize the sound package
+      formats/                  Subpackage for file format conversions
+              __init__.py
+              wavread.py
+              wavwrite.py
+              aiffread.py
+              aiffwrite.py
+              auread.py
+              auwrite.py
+              ...
+      effects/                  Subpackage for sound effects
+              __init__.py
+              echo.py
+              surround.py
+              reverse.py
+              ...
+      filters/                  Subpackage for filters
+              __init__.py
+              equalizer.py
+              vocoder.py
+              karaoke.py
+              ...
+
+When importing the package, Python searches through the directories on sys.path looking
+for the package subdirectory.
+
+The __init__.py files are required to make Python treat directories containing the file
+as packages. This prevents directories with a common name, such as string,
+unintentionally hiding valid modules that occur later on the module search path. In the
+simplest case, __init__.py can just be an empty file, but it can also execute
+initialization code for the package or set the __all__ variable, described later.
+
+Users of the package can import individual modules from the package, for example:
+
+import sound.effects.echo
+
+This loads the submodule sound.effects.echo. It must be referenced with its full name.
+
+sound.effects.echo.echofilter(input, output, delay=0.7, atten=4)
+
+An alternative way of importing the submodule is:
+
+from sound.effects import echo
+
+This also loads the submodule echo, and makes it available without its package prefix, so
+it can be used as follows:
+
+echo.echofilter(input, output, delay=0.7, atten=4)
+
+Yet another variation is to import the desired function or variable directly:
+
+from sound.effects.echo import echofilter
+
+Again, this loads the submodule echo, but this makes its function echofilter() directly
+available:
+
+echofilter(input, output, delay=0.7, atten=4)
+
+Note that when using "from package import item", the item can be either a submodule (or
+subpackage) of the package, or some other name defined in the package, like a function,
+class or variable. The import statement first tests whether the item is defined in the
+package; if not, it assumes it is a module and attempts to load it. If it fails to find
+it, an ImportError exception is raised.
+
+Contrarily, when using syntax like "import item.subitem.subsubitem", each item except for
+the last must be a package; the last item can be a module or a package but can’t be a
+class or function or variable defined in the previous item.
+
+Now what happens when the user writes "from sound.effects import *"? Ideally, one would
+hope that this somehow goes out to the filesystem, finds which submodules are present in
+the package, and imports them all. This could take a long time and importing sub-modules
+might have unwanted side-effects that should only happen when the sub-module is
+explicitly imported.
+
+The only solution is for the package author to provide an explicit index of the package.
+The import statement uses the following convention: if a package’s __init__.py code
+defines a list named __all__, it is taken to be the list of module names that should be
+imported when "from package import *" is encountered. It is up to the package author to
+keep this list up-to-date when a new version of the package is released. Package authors
+may also decide not to support it, if they don’t see a use for importing * from their
+package. For example, the file sound/effects/__init__.py could contain the following code:
+
+__all__ = ["echo", "surround", "reverse"]
+
+This would mean that "from sound.effects import *" would import the three named submodules
+of the sound package.
+
+If __all__ is not defined, the statement "from sound.effects import *" does not import all
+submodules from the package sound.effects into the current namespace; it only ensures
+that the package sound.effects has been imported (possibly running any initialization
+code in __init__.py) and then imports whatever names are defined in the package. This
+includes any names defined (and submodules explicitly loaded) by __init__.py. It also
+includes any submodules of the package that were explicitly loaded by previous import
+statements. Consider this code:
+
+import sound.effects.echo
+import sound.effects.surround
+from sound.effects import *
+
+In this example, the echo and surround modules are imported in the current namespace
+because they are defined in the sound.effects package when the from...import statement is
+executed. (This also works when __all__ is defined.)
+
+Although certain modules are designed to export only names that follow certain patterns
+when you use import *, it is still considered bad practice in production code.
+
+Remember, there is nothing wrong with using "from package import specific_submodule"! In
+fact, this is the recommended notation unless the importing module needs to use
+submodules with the same name from different packages.
+
+When packages are structured into subpackages (as with the sound package in the example),
+you can use absolute imports to refer to submodules of siblings packages. For example, if
+the module sound.filters.vocoder needs to use the echo module in the sound.effects
+package, it can use "from sound.effects import echo".
+
+You can also write relative imports, with the "from module import name" form of import
+statement. These imports use leading dots to indicate the current and parent packages
+involved in the relative import. From the surround module for example, you might use:
+
+from . import echo
+from .. import formats
+from ..filters import equalizer
+
+Note that relative imports are based on the name of the current module. Since the name of
+the main module is always "__main__", modules intended for use as the main module of a
+Python application must always use absolute imports.
+
+Packages support one more special attribute, __path__. This is initialized to be a list
+containing the name of the directory holding the package’s __init__.py before the code in
+that file is executed. This variable can be modified; doing so affects future searches
+for modules and subpackages contained in the package.
+
+While this feature is not often needed, it can be used to extend the set of modules
+found in a package.
+
+decorators
+----------
+https://realpython.com/primer-on-python-decorators/
+
+def repeat(num_times):
+    def decorator_repeat(func):
+        @functools.wraps(func)
+        def wrapper_repeat(*args, **kwargs):
+            for _ in range(num_times):
+                value = func(*args, **kwargs)
+            return value
+        return wrapper_repeat
+    return decorator_repeat
+
+@repeat(num_times=4)
+def greet(name):
+    print(f"Hello {name}")
+
+is equivalent to
+
+def greet(name):
+    print(f"Hello {name}")
+greet = (repeat(num_times=4))(greet)
+
+lambdas
+-------
+https://realpython.com/python-lambda/
+
+closure functions
+-----------------
+https://zetcode.com/python/python-closures
+
+the with statement
+------------------
+https://docs.python.org/3/reference/compound_stmts.html?highlight=statement#the-with-statement
+https://docs.python.org/3/library/contextlib.html
+https://realpython.com/python-with-statement/
+
+It is convenient to inherit contextlib.AbstractContextManager as it implements the __enter__()
+method already which returns self.
+Also, read the doc of weakref.finalize()
+
+Reading and Writing Files
+-------------------------
+In text mode, the default when reading is to convert platform-specific line endings
+(\n on Unix, \r\n on Windows) to just \n. When writing in text mode, the default is to
+convert occurrences of \n back to platform-specific line endings. This behind-the-scenes
+modification to file data is fine for text files, but will corrupt binary data like that
+in JPEG or EXE files. Be very careful to use binary mode when reading and writing such
+files.
+
+It is good practice to use the "with" keyword when dealing with file objects. The advantage
+is that the file is properly closed after its suite finishes, even if an exception is
+raised at some point. Using "with" is also much shorter than writing equivalent try-finally
+blocks:
+
+>>> with open('workfile') as f:
+...     read_data = f.read()
+
+>>> # We can check that the file has been automatically closed.
+>>> f.closed
+True
+
+If you’re not using the "with" keyword, then you should call f.close() to close the file
+and immediately free up any system resources used by it.
+
+Warning: calling f.write() without using the with keyword or calling f.close() might
+result in the arguments of f.write() not being completely written to the disk, even if
+the program exits successfully.
+
+Example of file access
+----------------------
+import sys
+
+>>> os.listdir(os.getcwd())         # returns a list
+['music', 'photos', 'memo.txt']
+
+>>> os.path.isfile('emma.txt')      # returns bool
+True
+
+>>> os.path.isdir('memo.txt')       # returns bool
+False
+>>> os.path.isdir('/home/dinsdale') # returns bool
+True
+
+os.path.exists('memo.txt')          # returns bool
+os.path.abspath('memo.txt')         # returns str
+os.getcwd()                         # returns str
+
+exceptions
+----------
+https://docs.python.org/3/library/exceptions.html#exception-hierarchy # build-in exceptions
+
+An except clause may name multiple exceptions as a parenthesized tuple, for example:
+
+... except (RuntimeError, TypeError, NameError):
+...     pass
+
+All exceptions inherit from BaseException, and so it can be used to serve as a wildcard.
+Use this with extreme caution, since it is easy to mask a real programming error in this
+way! It can also be used to print an error message and then re-raise the exception
+(allowing a caller to handle the exception as well):
+
+import sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(s.strip())
+except OSError as err:
+    print("OS error: {0}".format(err))
+except ValueError:
+    print("Could not convert data to an integer.")
+except BaseException as err:
+    print(f"Unexpected {err=}, {type(err)=}")
+    raise
+
+Alternatively the last except clause may omit the exception name(s), however the
+exception value must then be retrieved from sys.exc_info()[1].
+
+The try … except statement has an optional else clause, which, when present, must follow
+all except clauses. It is useful for code that must be executed if the try clause does
+not raise an exception. For example:
+
+for arg in sys.argv[1:]:
+    try:
+        f = open(arg, 'r')
+    except OSError:
+        print('cannot open', arg)
+    else:
+        print(arg, 'has', len(f.readlines()), 'lines')
+        f.close()
+
+The use of the else clause is better than adding additional code to the try clause
+because it avoids accidentally catching an exception that wasn’t raised by the code being
+protected by the try … except statement.
+
+When an exception occurs, it may have an associated value, also known as the exception’s
+argument. The presence and type of the argument depend on the exception type.
+
+The except clause may specify a variable after the exception name. The variable is bound
+to an exception instance with the arguments stored in "instance.args". For convenience, the
+exception instance defines __str__() so the arguments can be printed directly without
+having to reference .args. One may also instantiate an exception first before raising it
+and add any attributes to it as desired.
+
+>>> try:
+...     raise Exception('spam', 'eggs')
+... except Exception as inst:
+...     print(type(inst))    # the exception instance
+...     print(inst.args)     # arguments stored in .args
+...     print(inst)          # __str__ allows args to be printed directly,
+...                          # but may be overridden in exception subclasses
+...     x, y = inst.args     # unpack args
+...     print('x =', x)
+...     print('y =', y)
+...
+<class 'Exception'>
+('spam', 'eggs')
+('spam', 'eggs')
+x = spam
+y = eggs
+
+If an exception has arguments, they are printed as the last part (‘detail’) of the
+message for unhandled exceptions.
+
+The raise statement allows the programmer to force a specified exception to occur. For
+example:
+
+>>> raise NameError('HiThere')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: HiThere
+
+The sole argument to raise indicates the exception to be raised. This must be either an
+exception instance or an exception class (a class that derives from Exception). If an
+exception class is passed, it will be implicitly instantiated by calling its constructor
+with no arguments:
+
+raise ValueError  # shorthand for 'raise ValueError()'
+
+If you need to determine whether an exception was raised but don’t intend to handle it, a
+simpler form of the raise statement allows you to re-raise the exception:
+
+>>> try:
+...     raise NameError('HiThere')
+... except NameError:
+...     print('An exception flew by!')
+...     raise
+...
+An exception flew by!
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+NameError: HiThere
+
+The raise statement allows an optional "from" which enables chaining exceptions. For
+example:
+
+# exc must be exception instance or None.
+raise RuntimeError from exc
+
+This can be useful when you are transforming exceptions. For example:
+
+>>> def func():
+...     raise ConnectionError
+...
+>>> try:
+...     func()
+... except ConnectionError as exc:
+...     raise RuntimeError('Failed to open database') from exc
+...
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "<stdin>", line 2, in func
+ConnectionError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+RuntimeError: Failed to open database
+
+Exception chaining happens automatically when an exception is raised inside an except or
+finally section. This can be disabled by using "from None" idiom:
+
+try:
+    open('database.sqlite')
+except OSError:
+    raise RuntimeError from None
+
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+RuntimeError
+
+Programs may name their own exceptions by creating a new exception class. Exceptions
+should typically be derived from the Exception class, either directly or indirectly.
+
+Exception classes can be defined which do anything any other class can do, but are
+usually kept simple, often only offering a number of attributes that allow information
+about the error to be extracted by handlers for the exception.
+
+Most exceptions are defined with names that end in “Error”, similar to the naming of the
+standard exceptions.
+
+Many standard modules define their own exceptions to report errors that may occur in
+functions they define.
+
+read all of
+https://docs.python.org/3/tutorial/errors.html#defining-clean-up-actions
+
+In Python, all exceptions must be instances of a class that derives from BaseException.
+In a try statement with an except clause that mentions a particular class, that clause
+also handles any exception classes derived from that class (but not exception classes
+from which it is derived).
+
+The built-in exception classes can be subclassed to define new exceptions; programmers
+are encouraged to derive new exceptions from the Exception class or one of its
+subclasses, and not from BaseException.
+
+User code can create subclasses that inherit from an exception type. It’s recommended to
+only subclass one exception type at a time to avoid any possible conflicts between how
+the bases handle the args attribute, as well as due to possible memory layout
+incompatibilities.
+
+All exceptions inherit from BaseException, and so it can be used to serve as a wildcard. Use this with extreme caution,
+since it is easy to mask a real programming error in this way! It can also be used to print an error message and then
+re-raise the exception (allowing a caller to handle the exception as well):
+
+import sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(s.strip())
+except OSError as err:
+    print("OS error: {0}".format(err))
+except ValueError:
+    print("Could not convert data to an integer.")
+except BaseException as err:
+    print(f"Unexpected {err=}, {type(err)=}")
+    raise
+
+Alternatively the last except clause may omit the exception name(s), however the exception value must then be retrieved
+from sys.exc_info()[1].
+
+Classes
+-------
+All member functions are virtual. Built-in types can be used as base classes for
+extension by the user.
+
+Writable attributes may be deleted with the del statement. For example,
+"del modname.the_answer" will remove the attribute "the_answer" from the object named by
+"modname".
+
+Namespaces are created at different moments and have different lifetimes. The namespace
+containing the built-in names is created when the Python interpreter starts up, and is
+never deleted. The global namespace for a module is created when the module definition
+is read in; normally, module namespaces also last until the interpreter quits. The
+statements executed by the top-level invocation of the interpreter, either read from a
+script file or interactively, are considered part of a module called __main__, so they
+have their own global namespace. (The built-in names actually also live in a module;
+this is called builtins.)
+
+The local namespace for a function is created when the function is called, and deleted
+when the function returns or raises an exception that is not handled within the function.
+(Actually, forgetting would be a better way to describe what actually happens.) Of
+course, recursive invocations each have their own local namespace.
+
+To rebind variables found outside of the innermost scope, the nonlocal statement can be
+used; if not declared nonlocal, those variables are read-only (an attempt to write to
+such a variable will simply create a new local variable in the innermost scope, leaving
+the identically named outer variable unchanged).
+
+Assignments do not copy data — they just bind names to objects. The same is true for
+deletions: the statement del x removes the binding of x from the namespace referenced by
+the local scope.
+
+This is an example demonstrating how to reference the different scopes and namespaces,
+and how global and nonlocal affect variable binding:
+
+def scope_test():
+    def do_local():
+        spam = "local spam"
+
+    def do_nonlocal():
+        nonlocal spam
+        spam = "nonlocal spam"
+
+    def do_global():
+        global spam
+        spam = "global spam"
+
+    spam = "test spam"
+    do_local()
+    print("After local assignment:", spam)
+    do_nonlocal()
+    print("After nonlocal assignment:", spam)
+    do_global()
+    print("After global assignment:", spam)
+
+scope_test()
+print("In global scope:", spam)
+
+The output of the example code is:
+
+After local assignment: test spam
+After nonlocal assignment: nonlocal spam
+After global assignment: nonlocal spam
+In global scope: global spam
+
+Note how the local assignment (which is default) didn’t change scope_test's binding of
+spam. The nonlocal assignment changed scope_test's binding of spam, and the global
+assignment changed the module-level binding.
+
+You can also see that there was no previous binding for spam before the global
+assignment.
+
+Class definitions, like function definitions (def statements) must be executed before
+they have any effect. (You could conceivably place a class definition in a branch of an
+if statement, or inside a function.)
+
+class MyClass:
+    """A simple example class"""
+    i = 12345
+
+    def f(self):
+        return 'hello world'
+
+MyClass.i and MyClass.f are valid attribute references, returning an integer and a
+function object, respectively. __doc__ is also a valid attribute, returning the docstring
+belonging to the class: "A simple example class".
+
+If the same attribute name occurs in both an instance and in a class, then attribute
+lookup prioritizes the instance:
+
+>>> class Warehouse:
+        purpose = 'storage'
+        region = 'west'
+
+>>> w1 = Warehouse()
+>>> print(w1.purpose, w1.region)
+storage west
+>>> w2 = Warehouse()
+>>> w2.region = 'east'
+>>> print(w2.purpose, w2.region)
+storage east
+
+Each value is an object, and therefore has a class (also called its type). It is stored
+as object.__class__.
+
+if a requested attribute is not found in the class, the search proceeds to look in the
+base class. This rule is applied recursively if the base class itself is derived from
+some other class.
+
+Because methods have no special privileges when calling other methods of the same object,
+a method of a base class that calls another method defined in the same base class may end
+up calling a method of a derived class that overrides it.
+
+There is a simple way to call the base class method directly: just call
+BaseClassName.methodname(self, arguments).
+
+* Use isinstance() to check an instance’s type: isinstance(obj, int) will be True only if
+  obj.__class__ is int or some class derived from int.
+* Use issubclass() to check class inheritance: issubclass(bool, int) is True since bool
+  is a subclass of int. However, issubclass(float, int) is False since float is not a
+  subclass of int.
+
+class DerivedClassName(Base1, Base2, Base3):
+    <statement-1>
+    .
+    .
+    .
+    <statement-N>
+
+For most purposes, in the simplest cases, you can think of the search for attributes
+inherited from a parent class as depth-first, left-to-right, not searching twice in the
+same class where there is an overlap in the hierarchy. Thus, if an attribute is not found
+in DerivedClassName, it is searched for in Base1, then (recursively) in the base classes
+of Base1, and if it was not found there, it was searched for in Base2, and so on.
+
+All classes inherit from object.
+
+Instance method objects have attributes, too: m.__self__ is the instance object with the
+method m(), and m.__func__ is the function object corresponding to the method.
+
+Behind the scenes, the for statement calls iter() on the container object. The function
+returns an iterator object that defines the method __next__() which accesses elements in
+the container one at a time. When there are no more elements, __next__() raises a
+StopIteration exception which tells the for loop to terminate. You can call the
+__next__() method using the next() built-in function; this example shows how it all works:
+
+>>> s = 'abc'
+>>> it = iter(s)
+>>> it
+<str_iterator object at 0x10c90e650>
+>>> next(it)
+'a'
+>>> next(it)
+'b'
+>>> next(it)
+'c'
+>>> next(it)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    next(it)
+StopIteration
+
+Having seen the mechanics behind the iterator protocol, it is easy to add iterator
+behavior to your classes. Define an __iter__() method which returns an object with a
+__next__() method. If the class defines __next__(), then __iter__() can just return self:
+
+class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+
+>>> rev = Reverse('spam')
+>>> iter(rev)
+<__main__.Reverse object at 0x00A1DB50>
+>>> for char in rev:
+...     print(char)
+...
+m
+a
+p
+s
+
+Generators are a simple and powerful tool for creating iterators. They are written like
+regular functions but use the yield statement whenever they want to return data. Each
+time next() is called on it, the generator resumes where it left off (it remembers all
+the data values and which statement was last executed). An example shows that generators
+can be trivially easy to create:
+
+def reverse(data):
+    for index in range(len(data)-1, -1, -1):
+        yield data[index]
+
+>>> for char in reverse('golf'):
+...     print(char)
+...
+f
+l
+o
+g
+
+Anything that can be done with generators can also be done with class-based iterators as
+described in the previous section. What makes generators so compact is that the
+__iter__() and __next__() methods are created automatically.
+
+Another key feature is that the local variables and execution state are automatically
+saved between calls. This made the function easier to write and much more clear than an
+approach using instance variables like self.index and self.data.
+
+In addition to automatic method creation and saving program state, when generators
+terminate, they automatically raise StopIteration. In combination, these features make it
+easy to create iterators with no more effort than writing a regular function.
+
+Some simple generators can be coded succinctly as expressions using a syntax similar to
+list comprehensions but with parentheses instead of square brackets. These expressions
+are designed for situations where the generator is used right away by an enclosing
+function. Generator expressions are more compact but less versatile than full generator
+definitions and tend to be more memory friendly than equivalent list comprehensions.
+
+Examples:
+
+>>> sum(i*i for i in range(10))                 # sum of squares
+285
+
+>>> xvec = [10, 20, 30]
+>>> yvec = [7, 5, 3]
+>>> sum(x*y for x,y in zip(xvec, yvec))         # dot product
+260
+
+>>> unique_words = set(word for line in page for word in line.split())
+
+>>> valedictorian = max((student.gpa, student.name) for student in graduates)
+
+>>> data = 'golf'
+>>> list(data[i] for i in range(len(data)-1, -1, -1))
+['f', 'l', 'o', 'g']
+
+Find the class that the method is defined in
+--------------------------------------------
+takes an object and a method name (as a string) and returns the class that provides
+the definition of the method:
+
+def find_defining_class(obj, meth_name):
+	for ty in type(obj).mro():
+		if meth_name in ty.__dict__:
+			return ty
+
+Here’s an example:
+>>> hand = Hand()
+>>> find_defining_class(hand, 'shuffle')
+<class 'Card.Deck'>
+
+operators usually overloaded in classes
+---------------------------------------
+__str__()
+__repr__() # if not representable, <type: typename, name: objname, id: objaddr>
+__len__()
+__iter__()
+__getitem__()
+__reversed__() # not needed if __len__() and __getitem__() are defined
+__bool__()     # not needed if __len__() is defined
+__call__()     # make a class object callable
+__eq__()
+__add__()
+__radd__()
+__iadd__()
+__lt__()
+__gt__()
+__enter__() -|
+__exit__()  -| => when defined allow for with statement
+
+good example of using super() with multiple inheritance
+-------------------------------------------------------
+https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
+
+abstract base classes
+---------------------
+https://docs.python.org/3/howto/descriptor.html#complete-practical-example    # example of abstract base class
+https://docs.python.org/3/library/abc.html#module-abc                         # Abstract Base Classes
+https://docs.python.org/3/library/collections.abc.html#module-collections.abc # Abstract Base Classes for Containers
+
+* If you want to extend and/or modify the functionality of the standard set class without modifying how a set is
+  represented internally create a new class that inherits from set.
+* If you want a class that modifies how a set is represented internally create a class that inherits from
+  collections.abc.Set or collections.abc.MutableSet. See example, 
+  https://docs.python.org/3/library/collections.abc.html#examples-and-recipes
+
+Call ctor of base classes in ctor of subclass
+---------------------------------------------
+def __init__(self, args):
+    for class_name in self.__class__.__bases__:
+        class_name.__init__(self, args) # assumes all bases take same type and number of arguments
+
+multiple ctors
+--------------
+https://realpython.com/python-multiple-constructors/
+
+delegation
+----------
+class UpperOut:
+    def __init__(self, outfile):
+        self._outfile = outfile
+
+    def write(self, s):
+        self._outfile.write(s.upper())
+
+    def __getattr__(self, name):
+        return getattr(self._outfile, name)
+
+Here the UpperOut class redefines the write() method to convert the argument string to uppercase before calling the
+underlying self._outfile.write() method. All other methods are delegated to the underlying self._outfile object. The
+delegation is accomplished via the __getattr__ method.
+
+Note that for more general cases delegation can get trickier. When attributes must be set as well as retrieved, the
+class must define a __setattr__() method too, and it must do so carefully. The basic implementation of __setattr__()
+is roughly equivalent to the following:
+
+class X:
+    def __setattr__(self, name, value):
+        self.__dict__[name] = value
+
+Most __setattr__() implementations must modify self.__dict__ to store local state for self without causing an infinite
+recursion.
+
+static class data and static class methods
+------------------------------------------
+https://docs.python.org/3/faq/programming.html#how-do-i-create-static-class-data-and-static-class-methods
+
+class private attributes
+------------------------
+https://docs.python.org/3/faq/programming.html#i-try-to-use-spam-and-i-get-an-error-about-someclassname-spam
+
+when to override __new__()
+--------------------------
+https://docs.python.org/3/faq/programming.html#how-can-a-subclass-control-what-data-is-stored-in-an-immutable-instance
+
+brief tour of the standard library
+----------------------------------
+The built-in dir() and help() functions are useful as interactive aids for working with
+large modules like os:
+
+>>> import os
+>>> dir(os)
+<returns a list of all module functions>
+>>> help(os)
+<returns an extensive manual page created from the module's docstrings>
+
+For daily file and directory management tasks, the shutil module provides a higher level
+interface that is easier to use:
+
+>>> import shutil
+>>> shutil.copyfile('data.db', 'archive.db')
+'archive.db'
+>>> shutil.move('/build/executables', 'installdir')
+'installdir'
+
+The glob module provides a function for making file lists from directory wildcard
+searches:
+
+>>> import glob
+>>> glob.glob('*.py')
+['primes.py', 'random.py', 'quote.py']
+
+The argparse module provides a more sophisticated mechanism to process command line
+arguments. The following script extracts one or more filenames and an optional number of
+lines to be displayed:
+
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog='top',
+    description='Show top lines from each file')
+parser.add_argument('filenames', nargs='+')
+parser.add_argument('-l', '--lines', type=int, default=10)
+args = parser.parse_args()
+print(args)
+
+When run at the command line with "python top.py --lines=5 alpha.txt beta.txt", the script
+sets args.lines to 5 and args.filenames to ['alpha.txt', 'beta.txt'].
+
+The sys module also has attributes for stdin, stdout, and stderr. The latter is useful
+for emitting warnings and error messages to make them visible even when stdout has been
+redirected:
+
+>>> sys.stderr.write('Warning, log file not found starting a new one\n')
+Warning, log file not found starting a new one
+
+The most direct way to terminate a script is to use sys.exit().
+
+The re module provides regular expression tools for advanced string processing. For
+complex matching and manipulation, regular expressions offer succinct, optimized
+solutions:
+
+>>> import re
+>>> re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
+['foot', 'fell', 'fastest']
+>>> re.sub(r'(\b[a-z]+) \1', r'\1', 'cat in the the hat')
+'cat in the hat'
+
+When only simple capabilities are needed, string methods are preferred because they are
+easier to read and debug:
+
+>>> 'tea for too'.replace('too', 'two')
+'tea for two'
+
+The random module provides tools for making random selections:
+
+>>> import random
+>>> random.choice(['apple', 'pear', 'banana'])
+'apple'
+>>> random.sample(range(100), 10)   # sampling without replacement
+[30, 83, 16, 4, 8, 81, 41, 50, 18, 33]
+>>> random.random()    # random float
+0.17970987693706186
+>>> random.randrange(6)    # random integer chosen from range(6)
+4
+
+The statistics module calculates basic statistical properties (the mean, median,
+variance, etc.) of numeric data:
+
+>>> import statistics
+>>> data = [2.75, 1.75, 1.25, 0.25, 0.5, 1.25, 3.5]
+>>> statistics.mean(data)
+1.6071428571428572
+>>> statistics.median(data)
+1.25
+>>> statistics.variance(data)
+1.3720238095238095
+
+>>> from timeit import Timer
+>>> Timer('t=a; a=b; b=t', 'a=1; b=2').timeit()
+0.57535828626024577
+>>> Timer('a,b = b,a', 'a=1; b=2').timeit()
+0.54962537085770791
+
+In contrast to timeit’s fine level of granularity, the profile and pstats modules provide
+tools for identifying time critical sections in larger blocks of code.
+
+The doctest module provides a tool for scanning a module and validating tests embedded in
+a program’s docstrings. Test construction is as simple as cutting-and-pasting a typical
+call along with its results into the docstring. This improves the documentation by
+providing the user with an example and it allows the doctest module to make sure the code
+remains true to the documentation:
+
+def average(values):
+    """Computes the arithmetic mean of a list of numbers.
+
+    >>> print(average([20, 30, 70]))
+    40.0
+    """
+    return sum(values) / len(values)
+
+import doctest
+doctest.testmod()   # automatically validate the embedded tests
+
+The unittest module is not as effortless as the doctest module, but it allows a more
+comprehensive set of tests to be maintained in a separate file:
+
+import unittest
+
+class TestStatisticalFunctions(unittest.TestCase):
+
+    def test_average(self):
+        self.assertEqual(average([20, 30, 70]), 40.0)
+        self.assertEqual(round(average([1, 5, 7]), 1), 4.3)
+        with self.assertRaises(ZeroDivisionError):
+            average([])
+        with self.assertRaises(TypeError):
+            average(20, 30, 70) # raises exception as average() expects iterable due to
+                                # call to sum()
+
+unittest.main()  # Calling from the command line invokes all tests
+
+How to define format in logging.basicConfig() using python's str.format?
+------------------------------------------------------------------------
+https://stackoverflow.com/questions/51373268/how-to-define-format-in-logging-basicconfig-using-pythons-str-format
+
+Python socket programming
+-------------------------
+https://realpython.com/python-sockets/#reference
+
+async-IO
+--------
+https://realpython.com/async-io-python/
+
+python timers, with statement, decorators, timeit, code profilers, line profilers, memory profilers
+---------------------------------------------------------------------------------------------------
+https://realpython.com/python-timer/#python-timers
+
+Virtual environments and pip
+----------------------------
+https://docs.python.org/3/tutorial/venv.html
