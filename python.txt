@@ -22,7 +22,7 @@ https://docs.python.org/3/library/collections.html#module-collections # collecti
 https://docs.python.org/3/library/keyword.html#module-keyword         # keywords
 https://docs.python.org/3/library/dataclasses.html#module-dataclasses # dataclasses
 
-orfer of methods in a class
+order of methods in a class
 ---------------------------
 Interfaces first: Public methods and Python magic functions define the interface of the class. Most of the time, you and
 other developers want to use a class rather than change it. Thus they will be interested in the interface of that class.
