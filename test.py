@@ -86,4 +86,21 @@ if __name__ == "__main__":
     print(dt1-dt2)
     print(hasattr(A(), 'a'))
 
-    
+    x = y = 1
+    print(x, y)
+    print(4/3 * 3.14 * 5**3)
+    print("cost:", 24.95 * 0.60 + 3 + (24.95 * 0.60 + 0.75) * 60)
+    seconds = 2*(8*60+15) + 3*(7*60+12)
+    print("total running seconds:", seconds)
+    minutes = 52*60 + seconds
+    print("total seconds:", minutes)
+    seconds = minutes - ((minutes // 60) * 60)
+    print("seconds:", seconds)
+    minutes = minutes // 60
+    print("minutes:", minutes)
+    minutes = 52 + minutes
+    print("total minutes:", minutes)
+    print("total hours:", minutes // 60)
+    hour = 6 + minutes // 60
+    print("arrival:", 6 + minutes // 60,":",minutes % 60, ":", seconds)
+    print(calendar)
