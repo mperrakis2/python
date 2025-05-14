@@ -1,12 +1,14 @@
-"""This program displays words that are anagrams based on text files input by the user. The
-anagrams are sorted descendingly by length.
+"""This program prints words that are anagrams based on text files 
+input by the user. The anagrams are sorted descendingly by length.
 
-Depending on the user input the anagrams created are one of three kinds:
+Depending on the user input the anagrams printed are one of three kinds:
 - PLAIN     : Plain anagrams
-- BINGO     : Anagrams that have the char length required by the game of bingo.
-- METATHESIS: Anagrams of words that have metathesis, i.e. one word can be transformed into
-              the other by swapping two letters, e.g. 'converse' and 'conserve'. Thus, these
-              type of anagrams are always pairs.
+- BINGO     : Anagrams that have the char length required by the game of
+              bingo.
+- METATHESIS: Anagrams of words that have metathesis, i.e. one word can
+              be transformed into the other by swapping two letters, 
+              e.g. 'converse' and 'conserve'. Thus, these type of 
+              anagrams are always pairs.
 """
 import sys
 import fileinput
@@ -22,28 +24,34 @@ METATHESIS = BINGO * 2
 _BINGO_LEN = 8
 _ANAGRAMS = (PLAIN, BINGO, METATHESIS)
 
-# Inherit class that provides functionality for adding two instances of the derived class and
-# reference counting as well.
+# Inherit class that provides functionality for adding two instances of
+# the derived class and reference counting as well.
 class Anagram(utility.AdderWithRefCount):
-    """Implement functionality to create anagrams from text files."""
+    """Implement functionality to print anagrams from text files."""
+
     def __init__(self):
         """ctor"""
-        # last parameter indicates that object references are not taken into account when adding two
-        # instances of this class
+
+        # last parameter indicates that object references are not taken
+        # into account when adding two instances of this class
         super().__init__(False)
         self.__reset() # init attributes
 
-    def create(self, *filenames, flag = PLAIN, reset = False):
-        """Create anagrams from the list of text files passed in as a parameter.
+    def produce(self, *filenames, flag = PLAIN, reset = False):
+        """Produce anagrams from list of text files passed in as param.
 
         filenames: tuple of str, should be valid filenames
         flag     : int, flag that takes the values shown below
 
                    - PLAIN     : Plain anagrams.
-                   - BINGO     : Anagrams that have the char length required by the game of bingo.
-                   - METATHESIS: Create anagrams of words that have metathesis, i.e. one word can be
-                                 transformed into the other by swapping two letters, e.g. 'converse'
-                                 and 'conserve'. Thus, these types of anagrams are always pairs.
+                   - BINGO     : Anagrams that have the char length 
+                                 required by the game of bingo.
+                   - METATHESIS: Create anagrams of words that have 
+                                 metathesis, i.e. one word can be
+                                 transformed into the other by swapping
+                                 two letters, e.g. 'converse' and 
+                                 'conserve'. Thus, these types of 
+                                 anagrams are always pairs.
 
         reset    : bool, True if existing anagrams are to be deleted
 
@@ -59,7 +67,8 @@ class Anagram(utility.AdderWithRefCount):
             self.__flag = flag
 
         if self.__flag != flag:
-            print(f"error: you can't add an anagram of type {flag!r} to a type {self.__flag!r}")
+            print(f"error: you can't add an anagram of type {flag!r} "
+                  f"to a type {self.__flag!r}")
             return False
 
         result = True
@@ -69,7 +78,7 @@ class Anagram(utility.AdderWithRefCount):
         if filenames:
             try:
                 with fileinput.input(filenames, encoding="utf-8") as file:
-                    # store the contents of the text files into the anagrams dictionary
+                    # store the contents of the text files in dictionary
                     for line in file:
                         self.__insert(line)
                     self.filenames.add(fileinput.filename())
@@ -77,7 +86,7 @@ class Anagram(utility.AdderWithRefCount):
                 print(exc)
                 result = False
             finally:
-                self.__process() # process anagrams to their final form
+                self.__hash() # hash anagrams
 
         return result
 
@@ -86,15 +95,15 @@ class Anagram(utility.AdderWithRefCount):
         """Sort the anagrams if necessary and return them.
 
         return: tuple(list, dict)
-                      list: list of sorted anagrams, anagrams: set of str
-                      dict: pairs of (str, set of str)
-                                      str       : a word sorted in ascending order
-                                      set of str: set of anagrams for the word
+                list: list of sorted anagrams, anagrams: set of str
+                dict: pairs of (str, set of str)
+                                str       : a word sorted ascendingly
+                                set of str: set of anagrams for the word
         """
         if self.__update:
             self.__sorted_anagrams = list(self.agrams.values())
 
-            # sort in such a way that words with the most anagrams appear first
+            # sort so that words with the most anagrams appear first
             self.__sorted_anagrams.sort(key = len, reverse = True)
             self.__update = False
 
@@ -115,35 +124,35 @@ class Anagram(utility.AdderWithRefCount):
         self.__reset()
 
     def __str__(self):
-        """Called when printing an anagram object.
+        """Called when printing an anagram obj.
 
         return: str, a formatted string containing all anagrams
         """
         return anagram_str(self.anagrams[0])
 
     def __repr__(self):
-        """Called when calling the representation (repr(anagram_obj)) of an anagram object.
+        """Called when calling repr(obj) of an anagram obj.
 
-        return: str, the representation which allows an anagram object to be identified
+        return: str, the repr of an anagram obj
         """
-        return f"<type: {self.__class__.__module__}.{self.__class__.__name__},"\
-               f" id: {id(self)}>"
+        return f"<type: {self.__class__.__module__}.{self.__class__.__name__}"\
+               f", id: {id(self)}>"
 
     def __call__(self):
         """See doc of returned method."""
         return self.anagrams
 
     def __bool__(self):
-        """Called when an anagram object is used as a boolean in an expression.
+        """Called when an anagram obj is used in a boolean expression.
 
         return: bool, see __len__()
         """
         return bool(self.__len__())
 
     def __len__(self):
-        """Called when calling the length (len(anagram_obj)) of an anagram object.
+        """Called when calling len(obj) of an anagram obj.
 
-        return: int, the length of the anagram object
+        return: int, the length of the anagram obj
         """
         return len(self.anagrams[0])
 
@@ -153,7 +162,7 @@ class Anagram(utility.AdderWithRefCount):
         other: Anagram, the anagrams to compare with
 
         return: bool or NotImplemented
-                bool          : True if the two anagram objects are equal
+                bool          : True if the two anagram objs are equal
                 NotImplemented: if there's a parameter error
         """
         if not isinstance(other, Anagram):
@@ -164,9 +173,9 @@ class Anagram(utility.AdderWithRefCount):
         return self.__flag == other.flag and self.filenames == other.filenames
 
     def __iter__(self):
-        """Called whenever an iterator of an anagram object is requested.
+        """Called whenever an iterator of an anagram obj is requested.
 
-        return: iterator object, an anagram object iterator
+        return: iterator obj, an anagram obj iterator
         """
         return iter(self.anagrams[0])
 
@@ -178,16 +187,17 @@ class Anagram(utility.AdderWithRefCount):
         return: list of str, i.e. the anagrams for key
 
         exceptions: TypeError, if key is of an inappropriate type
-                    IndexError, if key is of a value outside the set of indexes for the sequence
+                    IndexError, if key is of a value outside the set of
+                                indexes for the sequence
         """
         return self.anagrams[0][key]
 
     def _is_add(self, other):
-        """Check if two anagram objects can be added.
+        """Check if two anagram objs can be added.
 
-        other: Anagram, the anagram object to compare this one to
+        other: Anagram, the anagram obj to compare this one to
 
-        return: bool, True if both anagram objects can be added
+        return: bool, True if both anagram objs can be added
         """
         for filename in self.filenames:
             if filename in other.filenames:
@@ -195,13 +205,13 @@ class Anagram(utility.AdderWithRefCount):
 
         return self.__flag == other.flag
 
-    def _op_add(self, other):
-        """Add a anagram object to this one.
+    def _add(self, other):
+        """Add an anagram obj to this one.
 
         other: Anagram
         """
         self.filenames |= other.filenames
-        if not self.agrams: # if self is empty just do a deep copy of anagrams
+        if not self.agrams: # if self is empty do a deepcopy of anagrams
             self.agrams = copy.deepcopy(other.agrams)
             self.__update = True
             if self.__flag == METATHESIS:
@@ -214,30 +224,28 @@ class Anagram(utility.AdderWithRefCount):
             for anagram in anagrams_o:
                 anagrams.add(anagram)
 
-        # Plain anagrams need not be processed further except for setting the update flag which is
-        # set further below. Metathesis anagrams need to be processed as their pairs need to be
-        # unpacked for new pairs to be created correctly. Bingo anagrams need to be processed as
-        # well in order to keep only the ones with the largest number of anagrams.
         if self.__flag != PLAIN:
-            self.__process()
+            self.__hash()
         else:
             self.__update = True
 
     def __reset(self):
         """Initialize attributes."""
         self.__sorted_anagrams = [] # sorted list of anagrams
-        self.agrams = {}            # key is str, a word sorted in ascending order
-                                    # value is set of str, a set of anagrams for the word (key)
+        self.agrams = {}            # key: str, word sorted ascendingly
+                                    # value is set of str, a set of
+                                    # anagrams for the word (key)
         self.filenames = set()      # a set of files that have been read
-        self.__flag = PLAIN         # a flag indicating the type of anagram
-        self.__update = False       # have the anagrams been updated?
-        self.__pair = False         # have metathesis anagrams actually been added?
+        self.__flag = PLAIN         # flag indicating type of anagram
+        self.__update = False       # anagrams been updated?
+        self.__pair = False         # metathesis anagrams been added?
 
     def __insert(self, line):
-        """Insert words read from a string (line) to an anagram dictionary.
+        """Insert words read from string (line) to an anagram dict.
 
-        The pair has a key of a sorted word and a value of a set of words of equal length to the key
-        and exactly the same characters as the key.
+        The pair has a key of a sorted word and a value of a set of
+        words of equal length to the key and exactly the same characters
+        as the key.
 
         line: str, a line of words
         """
@@ -248,52 +256,64 @@ class Anagram(utility.AdderWithRefCount):
                 words = self.agrams.setdefault(sorted_word, set())
                 words.add(word)
 
-    def __process(self):
-        """Process anagrams based on their flag."""
+    def __hash(self):
+        """Hash anagrams based on their flag.
+        
+        Plain anagrams need not be hashed further except for setting the
+        update flag which is set further below. Metathesis anagrams need
+        to be hashed as their pairs need to be unpacked for new pairs to
+        be created correctly. Bingo anagrams need to be hashed as well
+        to keep only the ones with the largest number of anagrams.
+        """
         length = 1
         pair = False
         for sorted_word, anagrams in self.agrams.copy().items():
-            if len(anagrams) > 1: # at least two anagrams must exist per sorted word
+            # at least two anagrams must exist per sorted word
+            if len(anagrams) > 1:
                 if self.__flag == METATHESIS:
-                    anagrams = self.__metathesis(anagrams) # return only pairs that have metathesis
+                    # return only pairs that have metathesis
+                    anagrams = self.__metathesis(anagrams)
                     if anagrams:
                         self.agrams[sorted_word] = anagrams
-                        pair = True # at least one pair of metathesis anagrams has been added
+                        # at least one pair of metathesis anagrams added
+                        pair = True
                         self.__update = True
                     else:
                         del self.agrams[sorted_word]
                 elif self.__flag == BINGO:
-                    if len(anagrams) > length: # save anagrams with the largest number of elements
+                    # save anagrams with the largest number of elements
+                    if len(anagrams) > length:
                         self.agrams.clear()
                         length = len(anagrams)
                         self.agrams[sorted_word] = anagrams
                         self.__update = True
 
-                    # save all anagrams with the largest number of elements
+                    # save all anagrams with the largest num of elements
                     elif len(anagrams) == length:
                         self.agrams[sorted_word] = anagrams
                         self.__update = True
                 else:
                     self.__update = True
             else:
-                # bingo anagrams are cleared above so pop() is used for safe deletion to avoid
-                # raising KeyError
+                # bingo anagrams are cleared above so pop() is used for
+                # safe deletion to avoid raising KeyError
                 self.agrams.pop(sorted_word, None)
 
         if pair:
             self.__pair = True
 
     def __metathesis(self, anagrams):
-        """Iterate over anagrams and save any pairs that have metathesis.
+        """Iterate over anagrams and save pairs that have metathesis.
 
-        anagrams: set of str, words of equal length and exactly the same characters
+        anagrams: set of str, words of equal length and same chars
 
-        return: set of tuple(str, str), holds the pairs of anagrams that have metathesis
+        return: set of tuple(str, str), anagram pairs with metathesis
         """
         metathesis = set()
 
-        # in case old metathesis anagrams exist, remove them, as they are pairs, and add them again
-        # as separate elements to process them effectively
+        # in case old metathesis anagrams exist, remove them, as they
+        # are pairs, and add them again as separate elements to process
+        # them effectively
         if self.__pair:
             for anagram in anagrams.copy():
                 if isinstance(anagram, tuple):
@@ -301,10 +321,10 @@ class Anagram(utility.AdderWithRefCount):
                     for agram in anagram:
                         anagrams.add(agram)
 
-        # produce pairs of anagrams, e.g. from {a,b,c,d} -> ab, ac, ad, bc, bd, cd and store them if
-        # there is metathesis
+        # produce pairs of anagrams, e.g. from {a,b,c,d} -> ab, ac, ad,
+        # bc, bd, cd and store them if there is metathesis
         for anagram, anagram2 in itertools.combinations(anagrams, 2):
-            _add_pair(anagram, anagram2, metathesis)
+            _pair(anagram, anagram2, metathesis)
 
         return metathesis
 
@@ -321,11 +341,12 @@ def anagram_str(anagrams):
 
     return agram_str
 
-_DESC_COMMON = "Anagram example: the sorted literal 'acer' creates the following words:" \
-               " 'acre', 'care', 'race'."
+_DESC_COMMON = "Anagram example: the sorted literal 'acer' produces the "\
+               "following words: 'acre', 'care', 'race'."
 
 _DESC = f"""\
-Read text files specified by the user and display anagrams from the words in the text files.
+Read text files specified by the user and display anagrams from the words in 
+the text files.
 {_DESC_COMMON}
 """
 
@@ -337,7 +358,8 @@ anagram type: 1 | 2 | 4 (1: plain, 2: bingo, 4: metathesis),  (default: 1)
         (metathesis anagrams only come in pairs)
 """
 
-_HELP_INPUT = 'INPUT [INPUT ...]: the text files to read to create the anagrams DB file'
+_HELP_INPUT = 'INPUT [INPUT ...]: the text files to read to create the '\
+              'anagrams DB file'
 
 def main():
     """Main entry point.
@@ -347,14 +369,16 @@ def main():
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter,
                                      description = _DESC,
                                      epilog = 'usage example: '
-                                              f'python {sys.argv[0]} -t 2 -i words.txt')
-    parser.add_argument('-t', '--type', type = int, choices = [1, 2, 4], default = 1,
-                        help = _HELP_ANAGRAM_TYPE)
-    parser.add_argument('-i', '--input', nargs='+', required = True, help = _HELP_INPUT)
+                                              'python '
+                                              f'{sys.argv[0]} -t 2 -i words')
+    parser.add_argument('-t', '--type', type = int, choices = [1, 2, 4],
+                        default = 1, help = _HELP_ANAGRAM_TYPE)
+    parser.add_argument('-i', '--input', nargs='+', required = True,
+                        help = _HELP_INPUT)
     args  = parser.parse_args()
 
     anagram = Anagram()
-    if anagram.create(*args.input, flag = args.type):
+    if anagram.produce(*args.input, flag = args.type):
         print(anagram)
 
     return 0
@@ -380,7 +404,7 @@ def _param_error(flag, reset, /, *filenames):
     if flag not in _ANAGRAMS:
         raise ValueError(f"error: 'flag' has to be one of {_ANAGRAMS}")
 
-def _add_pair(anagram, anagram2, metathesis):
+def _pair(anagram, anagram2, metathesis):
     """Pair two anagrams if they have metathesis.
 
     The two anagrams are of equal length.
@@ -396,9 +420,10 @@ def _add_pair(anagram, anagram2, metathesis):
         if char != anagram[i]:
             j += 1
             if j == 1:
-                pos1 = i # save position of first pair of chars that differ
+                pos1 = i # save pos of first pair of chars that differ
             else:
-                found = (j == 2 and anagram[pos1] == anagram2[i] and anagram[i] == anagram2[pos1])
+                found = (j == 2 and anagram[pos1] == anagram2[i] and
+                         anagram[i] == anagram2[pos1])
                 if not found:
                     break
     if found:

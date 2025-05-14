@@ -1,55 +1,62 @@
-"""This program takes as input a directory name and prints all contents of the directory and the
-directories below it. The function os_walk() mimics the behavior of the os.walk() standard library
-function.
+"""This program takes as input a directory name and prints all contents
+of the directory and the directories below it. The function os_walk()
+mimics the behavior of the os.walk() standard library function.
 """
 import os
 import sys
 import argparse
 
 class DirWalk:
-    """Implements functionality to traverse directories and store all filenames under the
-    directories.
+    """Implements functionality to traverse directories and store all
+    filenames under the directories.
     """
     def __init__(self, dirname, topdown = True, followlinks = False, ext = ''):
         """ctor
 
         dirname    : str, the directory to traverse
-        topdown    : bool, see documentation of python standard library os.walk()
-        followlinks: bool, True if sym links that are dirs are to be traversed
+        topdown    : bool, see doc of python standard library os.walk()
+        followlinks: bool, True if sym links that are dirs are to be
+                     traversed
         ext        : str, search only for files with this extension
         """
-        _param_error(dirname, topdown, followlinks, ext) # raise exception if error
+
+        # raise exception if error
+        _param_error(dirname, topdown, followlinks, ext)
 
         self.__dirname = dirname
         self.__topdown = topdown
         self.__followlinks = followlinks
         self.__ext = ext
-        self.__names = [] # directories and/or file names found under dirname
+        self.__names = [] # dirs and/or file names found under dirname
 
     def walk(self):
-        """Get filenames under the directory stored in the class attribute variable.
+        """Get fnames under dir stored in the class attribute variable.
 
         All directories under that variable are searched as well.
         """
         self.__names.clear()
-        dirname = os.path.normpath(self.__dirname) # remove any trailing slashes
-        if os.path.isfile(dirname): # if filename just print the ablolute filename path
+
+        # remove trailing slashes
+        dirname = os.path.normpath(self.__dirname)
+
+        # if filename just print the ablolute filename path
+        if os.path.isfile(dirname):
             print(os.path.abspath(dirname))
-        elif os.path.isdir(dirname): # if directory traverse directory list
+        elif os.path.isdir(dirname): # if dir traverse dir list
             stack = []
             i = 0
             while True:
                 tmp = dirname
 
-                # Find filenames under directory 'dirname'. Also, get new directory name if one
-                # exists.
+                # Find filenames under directory 'dirname'. Also, get
+                # new directory name if one exists.
                 dirname, i, directory = self.__find_filenames(dirname, i)
 
-                # if a new directory was found, append the current directory to the stack
+                # if new dir was found, append the current dir to stack
                 if directory:
                     stack.append((tmp, i))
                     i = 0
-                # if no new directory was found, pop the previous directory to continue printing
+                # if no new dir found, pop prev dir to continue printing
                 elif stack:
                     dirname, i = stack.pop()
                 # no new directory and no more stack left so exit
@@ -59,9 +66,11 @@ class DirWalk:
             print(f"{dirname} is not a file or a directory")
 
     def os_walk(self):
-        """Imitate the functionality of os.walk() of standard python library."""
+        """Imitate functionality of os.walk() (standard python lib)."""
         self.__names.clear()
-        dirname = os.path.normpath(self.__dirname) # remove any trailing slashes
+
+        # remove trailing slashes
+        dirname = os.path.normpath(self.__dirname)
 
         # if directory traverse directory list
         if os.path.isdir(dirname):
@@ -70,20 +79,20 @@ class DirWalk:
                 # create lists of directory and file names
                 dirnames, filenames = _create_lists(dirname)
 
-                # add the lists of directory and file names to the list of names
+                # add lists of dir and file names to the list of names
                 self.__names.append((dirname, dirnames, filenames))
 
                 # push directories in dirnames to the stack
                 self.__push_stack(stack, dirnames, dirname)
 
                 if stack:
-                    dirname = stack.pop() # get the new directory to process
+                    dirname = stack.pop() # get new directory to process
                 else:
                     break
 
     @property
     def names(self):
-        """Return all filenames under the directory stored in the class attribute variable.
+        """Return all filenames under dir stored in class attribute.
 
         return: list of str, i.e. filenames
 
@@ -91,8 +100,8 @@ class DirWalk:
 
                 list of tuple(str, list of str, list of str)
                               str        : a directory name
-                              list of str: all directories under the directory name
-                              list of str: all filenames under the directory name
+                              list of str: all dirs under dir name
+                              list of str: all filenames under dir name
         """
         return self.__names if self.__ext or self.__topdown else reversed(self.__names)
 
@@ -108,7 +117,8 @@ class DirWalk:
 
     @property
     def followlinks(self):
-        """return: bool, True if sym links that are dirs are to be traversed"""
+        """return: bool, True if sym links that are dirs are to be
+        traversed"""
         return self.__followlinks
 
     @property
@@ -131,9 +141,9 @@ class DirWalk:
         return names
 
     def __repr__(self):
-        """Called when calling the representation (repr(dirwalk_obj)) of a dir walk object.
+        """Called when calling repr(obj) on a dir walk object.
 
-        return: str, the representation which allows a dir walk object to be identified
+        return: str, repr to allow a dir walk object to be identified
         """
         return f"<type: {self.__class__.__module__}.{self.__class__.__name__},"\
                f" id: {id(self)}>"
@@ -143,9 +153,9 @@ class DirWalk:
         return self.names
 
     def __bool__(self):
-        """Called when a dir walk object is used as a boolean in an expression.
+        """Called when dir walk object is used as bool in expression.
 
-        return: bool, True if directories and/or filenames have been found
+        return: bool, True if dirs and/or filenames have been found
         """
         return bool(self.__names)
 
@@ -168,22 +178,22 @@ class DirWalk:
                self.__followlinks == other.followlinks and \
                self.__ext == other.ext
 
-    def __find_filenames(self, dirname, i):
+    def __find_filenames(self, dirname, idx):
         """Find the filenames of directory 'dirname'.
 
         dirname: str, a directory name
-        i      : int, the index in the directory dirname
+        idx    : int, the index in the directory dirname
 
         return: tuple(str, int, bool)
-                      str : a new directory name if one is found or else the old one
+                      str : new dir name if one is found or else old one
                       int : the updated index of the directory dirname
                       bool: True if a new directory was found
         """
         directory = False
-        dirlist = os.listdir(dirname) # convert directory contents to a list
-        for name in dirlist[i:]:
+        dirlist = os.listdir(dirname) # convert dir contents to a list
+        for name in dirlist[idx:]:
             path = os.path.join(dirname, name) # get full path name
-            i += 1
+            idx += 1
             if os.path.isfile(path):
                 if not self.__ext:
                     print(path)
@@ -197,7 +207,7 @@ class DirWalk:
                 directory = True
                 break
 
-        return dirname, i, directory
+        return dirname, idx, directory
 
     def __push_stack(self, stack, dirnames, dirname):
         """Push directories in dirnames to the stack.
@@ -210,7 +220,7 @@ class DirWalk:
         for directory in reversed(dirnames) if self.__topdown else dirnames:
             new_dirname = os.path.join(dirname, directory)
 
-            # if followlinks == False and new_dirname == link do not insert
+            # if followlinks == False & new_dirname == link don't insert
             if self.__followlinks or not os.path.islink(new_dirname):
                 stack.append(new_dirname)
 
@@ -230,7 +240,8 @@ def main():
         top = bool(args.top)
         follow = bool(args.follow)
         if sys_call:
-            for dirpath, dirnames, filenames in os.walk(args.dir, top, followlinks = follow):
+            for dirpath, dirnames, filenames in os.walk(args.dir, top, 
+                                                        followlinks = follow):
                 print(dirpath, dirnames, filenames)
         else:
             for dirpath, dirnames, filenames in os_walk(args.dir, top, follow):
@@ -239,11 +250,11 @@ def main():
     return 0
 
 def walk(dirname, extension = ''):
-    """Get filenames of the directory 'dirname' and all its subdirectories.
+    """Get filenames of directory 'dirname' and all its subdirectories.
 
     dirname  : str, a directory name
-    extension: str, a filename extension. If supplied, only files matching the extension are
-                    collected
+    extension: str, fname ext. If supplied only files matching extension
+                    are collected
 
     return: list of str, filenames
     """
@@ -254,16 +265,16 @@ def walk(dirname, extension = ''):
     return dir_walk()
 
 def os_walk(dirname, topdown = True, followlinks = False):
-    """Imitate the functionality of os.walk() of standard python library.
+    """Imitate functionality of os.walk() of standard python library.
 
     dirname    : str, the directory to traverse
-    topdown    : bool, see documentation of python standard library os.walk()
-    followlinks: bool, True if sym links that are dirs are to be traversed
+    topdown    : bool, see doc of python standard library os.walk()
+    followlinks: bool, True if sym links that are dirs must be traversed
 
     return: list of tuple, tuple(str, list of str, list of str)
                                  str        : a directory name
-                                 list of str: all directories under the directory name above
-                                 list of str: all filenames under the directory name above
+                                 list of str: dirs under dir name above
+                                 list of str: fnames under dir name above
     """
     dir_walk = DirWalk(dirname, topdown, followlinks)
 
@@ -278,18 +289,22 @@ def _cmdline():
     """
     # directory command line option
     parser_d = argparse.ArgumentParser(add_help = False)
-    parser_d.add_argument('-d', '--dir', default = ".", help = 'the directory name (default: ".")')
+    parser_d.add_argument('-d', '--dir', default = ".", 
+                          help = 'the directory name (default: ".")')
 
     # main parser
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter,
                                      description = _DESK,
-                                     epilog = 'for further help type: '
-                                              f'python {sys.argv[0]} <command> -h')
+                                     epilog = 'further help: '
+                                              f'python {sys.argv[0]} '
+                                              '<command> -h')
 
     # subparsers for the different commands
     subparsers = parser.add_subparsers(title = 'Commands',
-                                       description = "The following commands allow you to print "
-                                                     "all directory contents or by file extention.",
+                                       description = "The following commands "
+                                                     "allow you to print "
+                                                     "all directory contents "
+                                                     "or by\nfile extention.",
                                        help = 'DESCRIPTION', required = True)
 
     # create the parser for the "all" command
@@ -297,16 +312,20 @@ def _cmdline():
                                      formatter_class = argparse.RawTextHelpFormatter,
                                      help = 'print all directory contents')
     parser_a.add_argument('-t', '--top', type = int, choices = [0, 1], default = 1,
-                          help = "0 or 1, traverse topdown or the other way around (default: 1)")
+                          help = "0 or 1, traverse topdown or the other way "
+                                 "around (default: 1)")
     parser_a.add_argument('-f', '--follow', type = int, choices = [0, 1], default = 1,
-                          help = "0 or 1, traverse sym links if they are directories (default: 1)")
+                          help = "0 or 1, traverse sym links if they are "
+                                 "directories (default: 1)")
 
     # create the parser for the "ext" command
     parser_a = subparsers.add_parser('ext', aliases = ['e'], parents = [parser_d],
                                      formatter_class = argparse.RawTextHelpFormatter,
-                                     help = 'print directory contents by file extention')
+                                     help = 'print directory contents by file'
+                                            'extention')
     parser_a.add_argument('-e', '--ext', default = ".py",
-                          help = 'print files with this extention only (default: ".py")')
+                          help = 'print files with this extention only'
+                                 '(default: ".py")')
 
     return parser.parse_args()
 
@@ -314,7 +333,7 @@ def _param_error(dirname, topdown, followlinks, ext):
     """Validate parameters.
 
     dirname    : str, a directory name
-    topdown    : bool, see documentation of python standard library os.walk()
+    topdown    : bool, see doc of python standard library os.walk()
     followlinks: bool, if True follow links that point to directories
     ext        : str, a filename extension
 
@@ -326,7 +345,7 @@ def _param_error(dirname, topdown, followlinks, ext):
         raise ValueError("error: 'topdown' and 'followlinks' have to be of type 'bool'")
 
 def _create_lists(dirname):
-    """Create a list of files and a list of directories under the directory dirname.
+    """Create list of files and list of dirs under the dir 'dirname'.
 
     dirname: str, a directory
 
@@ -335,7 +354,7 @@ def _create_lists(dirname):
     """
     filenames = []
     dirnames = []
-    for name in os.listdir(dirname): # convert directory contents to a list
+    for name in os.listdir(dirname): # convert dir contents to a list
         path = os.path.join(dirname, name) # get full path name
         if os.path.isdir(path): # it's a directory
             dirnames.append(os.path.basename(path))

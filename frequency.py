@@ -1,8 +1,10 @@
-"""This program takes as input a string and it returns a list of frequencies per character in the
-string. The list is sorted in descending order of frequency. The list consists of tuples in the
-form (frequency, characters). 'frequency' is the number that each character occurs and 'characters'
-is a string of chars or a list of chars that have the same frequency. Thus, more than one
-character may have have the same frequency. Also, all chars in 'characters' are sorted in ascending
+"""This program takes as input a string and it returns a list of
+frequencies per character in the string. The list is sorted in
+descending order of frequency. The list consists of tuples in the form
+(frequency, characters). 'frequency' is the number that each character
+occurs and 'characters' is a string of chars or a list of chars that
+have the same frequency. Thus, more than one character may have have the
+same frequency. Also, all chars in 'characters' are sorted in ascending
 order.
 """
 import sys
@@ -10,8 +12,8 @@ import argparse
 
 import utility
 
-# Inherit class that provides functionality for adding two instances of the derived class and
-# reference counting as well.
+# Inherit class that provides functionality for adding two instances of
+# the derived class and reference counting as well.
 class CharFreq(utility.AdderWithRefCount):
     """Calculate the frequency of each character in a string."""
     def __init__(self):
@@ -22,9 +24,11 @@ class CharFreq(utility.AdderWithRefCount):
     def calc(self, string, str_rep = True, reset = False):
         """Calculate the frequency of each character in a string.
 
-        string : str, the string for which to calculate the frequency of characters
-        str_rep: bool, if True then all characters that have the same frequency are concatenated
-                 in a string in ascending order else they are elements of a list (also in
+        string : str, the string for which to calculate the frequency of
+                 characters
+        str_rep: bool, if True then all characters that have the same
+                 frequency are concatenated in a string in ascending
+                 order else they are elements of a list (also in
                  ascending order).
         reset  : bool, if True clear existing string
 
@@ -43,7 +47,7 @@ class CharFreq(utility.AdderWithRefCount):
             self.__string += string
 
         for char in self.__string:
-            freq = self.__chars.get(char, 0) # get frequency for the given character
+            freq = self.__chars.get(char, 0) # get freq for given char
             if freq:
                 # if the character exists already, delete it
                 self.__del_char(freq, char)
@@ -69,10 +73,10 @@ class CharFreq(utility.AdderWithRefCount):
                 str        : chars that have the same frequency
                 list of str: --------------ditto---------------
 
-                The list of tuple is sorted in descending order of frequency.
+                The list of tuple is sorted in descending order of freq.
         """
-        # convert the dictionary to a list and sort the list in reverse order so that higher
-        # frequencies appear first
+        # convert the dictionary to a list and sort the list in reverse
+        # order so that higher frequencies appear first
         return sorted(self.__freqs.items(), reverse = True)
 
     @property
@@ -82,7 +86,7 @@ class CharFreq(utility.AdderWithRefCount):
 
     @property
     def str_rep(self):
-        """return: bool, True if char freqs are represented as strings"""
+        """return: bool, True if char freqs represented as strings"""
         return self.__str_rep
 
     def clear(self):
@@ -98,9 +102,9 @@ class CharFreq(utility.AdderWithRefCount):
         return self.__string + " -> " + str(self.freqs)
 
     def __repr__(self):
-        """Called when calling the representation (repr(char_freq_obj)) of a char freq object.
+        """Called when calling repr(obj) on a char freq object.
 
-        return: str, the representation which allows an object equal to this one to be created
+        return: str, repr to allow obj equal to this one to be created
         """
         return f"{self.__class__.__module__}.{self.__class__.__name__}" \
                f"({self.__string, self.__str_rep})"
@@ -110,14 +114,14 @@ class CharFreq(utility.AdderWithRefCount):
         return self.freqs
 
     def __bool__(self):
-        """Called when a char freq object is used as a boolean in an expression.
+        """Called when a char freq obj is used as a bool in expression.
 
         return: bool, see __len__()
         """
         return bool(self.__len__())
 
     def __len__(self):
-        """Called when calling the length (len(char_freq_obj)) of a char freq object.
+        """Called when calling len(obj) on a char freq object.
 
         return: int, the number of char freq for a given string
         """
@@ -140,7 +144,7 @@ class CharFreq(utility.AdderWithRefCount):
         return self.__str_rep == other.str_rep and self.__string == other.string
 
     def __iter__(self):
-        """Called whenever an iterator of a char freq object is requested.
+        """Called whenever an iterator of a char freq obj is requested.
 
         return: iterator object, a char freq object iterator
         """
@@ -154,7 +158,8 @@ class CharFreq(utility.AdderWithRefCount):
         return: tuple, see return value of method in class
 
         exceptions: TypeError, if key is of an inappropriate type
-                    IndexError, if key is of a value outside the set of indexes for the sequence
+                    IndexError, if key is of a value outside the set of
+                    indexes for the sequence
         """
         return self.freqs[key]
 
@@ -167,7 +172,7 @@ class CharFreq(utility.AdderWithRefCount):
         """
         return self.__str_rep == other.str_rep and self.__string != other.string
 
-    def _op_add(self, other):
+    def _add(self, other):
         """Add a char freq object to this one.
 
         other: CharFreq
@@ -178,34 +183,34 @@ class CharFreq(utility.AdderWithRefCount):
         """Called when initializing or resetting this object."""
         self.__string = ""
         self.__str_rep = True
-        self.__freqs = {} # key is freq, value is all chars that have that freq
-        self.__chars = {} # key is char, value is the freq for that char
+        self.__freqs = {} # key is freq, val is all chars of that freq
+        self.__chars = {} # key is char, val is the freq for that char
 
     def __add_char(self, freq, char):
-        """Add a char for the given frequency to the dictionary of frequencies.
+        """Add a char for the given freq to the dict of frequencies.
 
         freq: int, the frequency for character 'char'
-        char: str, a single character to be added to the dictionary of frequencies
+        char: str, a single char to be added to the dict of frequencies
         """
-        # get the chars for the given frequency or add the frequency if it doesn't exist
+        # get chars for given freq or add the freq if it doesn't exist
         chars = self.__freqs.setdefault(freq, [])
 
         # find the position to insert the char
-        pos = utility.in_bisect(chars, char, True)
+        pos = utility.in_bisection(chars, char, True)
 
-        chars.insert(pos, char)   # insert the char at the position found
-        self.__chars[char] = freq # update the frequency for the given character
+        chars.insert(pos, char)   # insert the char at the pos found
+        self.__chars[char] = freq # update the freq for the given char
 
     def __del_char(self, freq, char):
-        """Delete a character for the given frequency in the dictionary of frequencies.
+        """Del character for given freq in the dict of frequencies.
 
         freq: int, the frequency for character 'char'
-        char: str, a single character to be deleted from the dictionary of frequencies
+        char: str, a single char to be deleted from the frequency dict
         """
-        chars = self.__freqs[freq] # get the chars for the given frequency
-        pos = utility.in_bisect(chars, char, True) # find the position of char
-        chars.pop(pos) # delete the char
-        if not chars: # delete the frequency item if no char has that frequency
+        chars = self.__freqs[freq] # get the chars for the given freq
+        pos = utility.in_bisection(chars, char, True) # find char pos
+        chars.pop(pos) # del the char
+        if not chars: # del frequency item if no char has that frequency
             del self.__freqs[freq]
 
 def main():
@@ -226,7 +231,7 @@ def main():
     return 0
 
 def frequency(string, str_rep = True, reset = False):
-    """Wrapper function for class that calculates the frequency of each character in a string.
+    """Wrapper for class that calculates the freq of each char in str.
 
     params: see corresponding method in class
     return: ditto
@@ -240,7 +245,7 @@ def frequency(string, str_rep = True, reset = False):
 def _param_error(string, str_rep, reset):
     """Validate parameters.
 
-    string : str, string for which to calculate frequency for each character
+    string : str, string for which to calculate frequency for each char
     str_rep: bool, if True convert a list of chars to a string
     reset  : bool, if True clear existing string
 

@@ -1,10 +1,12 @@
-"""Tnis program produces random text based on one or more text files read from the command line. A
-dictionary of prefix-suffix pairs is created based on the text files read. A prefix consists of one
-or more consequtive words from a file and the suffix is the word that immediately follows the
-prefix.
+"""Tnis program produces random text based on one or more text files
+read from the command line. A dictionary of prefix-suffix pairs is
+created based on the text files read. A prefix consists of one or more
+consequtive words from a file and the suffix is the word that 
+immediately follows the prefix.
 
-A prefix may repeat itself many times in a file and each time it could be followed by a different
-suffix. Thus, each prefix has a list of suffixes.
+A prefix may repeat itself many times in a file and each time it could
+be followed by a different suffix. Thus, each prefix has a list of
+suffixes.
 """
 import sys
 import string
@@ -16,15 +18,16 @@ import collections.abc
 
 import utility
 
-# Inherit class that provides functionality for adding two instances of the derived class and
-# reference counting as well.
+# Inherit class that provides functionality for adding two instances of
+# the derived class and reference counting as well.
 class RandomText(utility.AdderWithRefCount):
-    """Read text files and create a dictionary of prefix/suffix pairs. The prefix is a number of
-    consecutive words from a file and the suffix is the word that immediately follows the suffix.
+    """Read text files and create a dictionary of prefix/suffix pairs.
+    The prefix is a number of consecutive words from a file and the
+    suffix is the word that immediately follows the suffix.
 
     The prefix length is the number of words in the prefix.
 
-    A method exists that returns a random number of entries in the dictionary.
+    A method exists that returns a random number of entries in the dict.
     """
     def __init__(self):
         """ctor"""
@@ -32,23 +35,24 @@ class RandomText(utility.AdderWithRefCount):
         self.__reset()
 
     def create(self, length, /, *filenames, strip = True, reset = False):
-        """Create a dictionary of prefix-suffix pairs based on the files read.
+        """Create a dict of prefix-suffix pairs based on the files read.
 
-        A prefix consists of one or more consequtive words in a file and the suffix is the word that
-        immediately follows the prefix.
+        A prefix consists of one or more consequtive words in a file and
+        the suffix is the word that immediately follows the prefix.
 
-        A prefix may repeat itself many times in a file each time being followed (possibly) by a
-        different suffix. Thus, each prefix may correspond to a list of suffixes.
+        A prefix may repeat itself many times in a file each time being
+        followed (possibly) by a different suffix. Thus, each prefix may
+        correspond to a list of suffixes.
 
         length   : int, the number of words that make a prefix
-        filenames: tuple of str, files to read in order to produce random text
-        strip    : bool, if True the words that are read from the files are stripped of punctuation
-                   chars
+        filenames: tuple of str, files to read to produce random text
+        strip    : bool, if True the words that are read from the files
+                   are stripped of punctuation chars
         reset    : bool, True if existing random text is to be deleted
 
         return: bool, True if successful
         """
-        if _param_error(length, strip, reset, *filenames): # check parameters
+        if _param_error(length, strip, reset, *filenames): # param check
             return False
 
         if self.__length != length or self.__strip != strip or reset:
@@ -61,19 +65,23 @@ class RandomText(utility.AdderWithRefCount):
         filenames = utility.get_filenames(filenames, self.__filenames)
         if filenames:
             try:
-                # read the contents of the text files and create dictionary of prefix/suffix pairs
+                # read contents of text files and create dict of
+                # prefix/suffix pairs
                 with fileinput.input(filenames, encoding="utf-8") as file:
-                    # create string of chars to be stripped from words read from the files
+                    # create string of chars to be stripped from words
+                    # read from the files
                     chars = self.__strip_chars()
                     prefix = ()
 
                     for line in file:
                         line = line.replace('-', ' ')
-                        for word in line.split(): # loop through the words of a single line
+
+                        # iterate over words of single line
+                        for word in line.split():
                             word = word.strip(chars)
                             if word:
-                                # add the word to the prefix and to the suffix if the prefix is of
-                                # full length
+                                # add the word to the prefix and to the
+                                # suffix if the prefix is of full length
                                 prefix = self.__add_word(prefix, word.lower())
                     self.__filenames.add(fileinput.filename())
             except OSError as exc:
@@ -83,9 +91,9 @@ class RandomText(utility.AdderWithRefCount):
         return True
 
     def sample(self, samples):
-        """Return a list of random prefix-suffix pairs from the random text dictionary.
+        """Return list of rand prefix-suffix pairs from rand text dict.
 
-        samples: int > 0, number of random samples to read from the dictionary of
+        samples: int > 0, num of rand samples to read from dict of
                  prefix-suffix pairs
 
         return: list, the randomly retrieved samples
@@ -98,8 +106,8 @@ class RandomText(utility.AdderWithRefCount):
 
         # if no param error proceed
         if self.__random_text:
-            # convert random text dictionary to a list as the 'choice' function of the random
-            # module requires a sequence to iterate over
+            # convert rand text dict to list as the 'choice' function of
+            # rand module requires a seq to iterate over
             rand_text = list(self.__random_text.items())
             for i in range(samples):
                 # choose a random prefix-suffix pair from the list
@@ -113,12 +121,12 @@ class RandomText(utility.AdderWithRefCount):
 
     @property
     def length(self):
-        """return: int, the length of the prefix, i.e. the number of words"""
+        """return: int, length of prefix, i.e. the number of words"""
         return self.__length
 
     @property
     def strip(self):
-        """return: bool, True if words are stripped of punctuation chars"""
+        """return: bool, True if words stripped of punctuation chars"""
         return self.__strip
 
     @property
@@ -128,8 +136,8 @@ class RandomText(utility.AdderWithRefCount):
 
     @property
     def random_text(self):
-        """return: dict of random text, key  : prefix (a number of words)
-                                        value: suffix (a single word)
+        """return: dict of rand text, key  : prefix (a number of words)
+                                      value: suffix (a single word)
         """
         return self.__random_text
 
@@ -146,13 +154,14 @@ class RandomText(utility.AdderWithRefCount):
         return str(self.__random_text)
 
     def __repr__(self):
-        """Called when calling the representation (repr(random_text_obj)) of a random text object.
+        """Called when calling repr(obj) on a random text object.
 
-        return: str, the representation which allows an object equal to this one to be created
+        return: str, repr to allow obj equal to this one to be created
         """
         random_text = f"random_text = {self.__class__.__module__}.{self.__class__.__name__}()"
         if self.__random_text:
-            random_text += f"\nrandom_text.read({self.__length}, {self.__strip}, True, "
+            random_text += f"\nrandom_text.read({self.__length}, {self.__strip}"\
+                            ", True, "
             for filename in self.__filenames:
                 random_text += f"{filename}, "
             random_text += ")"
@@ -164,14 +173,14 @@ class RandomText(utility.AdderWithRefCount):
         return self.sample(samples)
 
     def __bool__(self):
-        """Called when a random text object is used as a boolean in an expression.
+        """Called when rand text obj is used as bool in expression.
 
         return: bool, see __len__()
         """
         return bool(self.__len__())
 
     def __len__(self):
-        """Called when calling the length (len(random_text_obj)) of a random text object.
+        """Called when calling len(obj) on a random text object.
 
         return: int, the number of prefix-suffix pairs
         """
@@ -196,7 +205,7 @@ class RandomText(utility.AdderWithRefCount):
                self.__filenames == other.filenames
 
     def __iter__(self):
-        """Called whenever an iterator of a random text object is requested.
+        """Called whenever an iter of a rand text obj is requested.
 
         return: iterator object, a random text object iterator
         """
@@ -227,13 +236,13 @@ class RandomText(utility.AdderWithRefCount):
 
         return self.__length == other.length and self.__strip == other.strip
 
-    def _op_add(self, other):
+    def _add(self, other):
         """Add a random text object to this one.
 
         other: RandomText
         """
         self.__filenames |= other.filenames
-        if not self.__random_text: # if self is empty just do a deep copy of random text
+        if not self.__random_text: # self empty so deep copy rand text
             self.__random_text = copy.deepcopy(other.random_text)
             return
 
@@ -249,11 +258,11 @@ class RandomText(utility.AdderWithRefCount):
         self.__strip = False
         self.__filenames = set() # files read
         self.__random_text = {}  # dict(tuple(str), str)
-                                 #      tuple(str): prefix, more than one word
-                                 #      str       : suffix, just one word
+                                 #      tuple(str): prefix, many words
+                                 #      str       : suffix, one word
 
     def __strip_chars(self):
-        """Make a small string of chars that are to be stripped from a word.
+        """Make small str of chars that are to be stripped from a word.
 
         return: str, string of chars to be stripped from a word
         """
@@ -267,28 +276,32 @@ class RandomText(utility.AdderWithRefCount):
         """Create a new prefix or add to the existing one.
 
         prefix: tuple(str), the current prefix in use
-        word  : str, the word to be added to the prefix and possibly suffix
+        word  : str, word to be added to the prefix and possibly suffix
 
         return: str, the updated prefix
         """
-        # as long as the prefix does not have the required length keep adding words to it
+        # if prefix doesn't have required length keep adding words to it
         if len(prefix) < self.__length:
             prefix += (word, )
         else:
-            # the prefix has the required length so add the word as a suffix
+            # the prefix has required length so add the word as a suffix
             suffixes = self.__random_text.setdefault(prefix, [])
             suffixes.append(word)
-            prefix = prefix[1:] + (word, ) # create new prefix by adding the new word
+
+            # create new prefix by adding new word
+            prefix = prefix[1:] + (word, )
 
         return prefix
 
 _DESC = """\
-Print random samples of text created by reading one or more text files. Every sample has a prefix
-and suffix. The prefix is a concatenation of words read in sequence from a text file. The suffix is
-the word immediately following the prefix in the text file.
+Print random samples of text created by reading one or more text files. Every 
+sample has a prefix and suffix. The prefix is a concatenation of words read in
+sequence from a text file. The suffix is the word immediately following the
+prefix in the text file.
 """
 
-_EPILOG = f'usage example: python {sys.argv[0]} -s 10 -l 4 -p 1 -f emma.txt sample.txt sample2.txt'
+_EPILOG = f'usage example: python {sys.argv[0]} -s 10 -l 4 -p 1 -f emma.txt '\
+           'sample.txt sample2.txt'
 
 def main():
     """Main entry point.
@@ -312,7 +325,8 @@ def main():
 
     # check integer command line parameters
     if args.samples > 0:
-        if rand_text.create(args.length, *args.files, strip = bool(args.strip), reset = True):
+        if rand_text.create(args.length, *args.files, strip = bool(args.strip),
+                            reset = True):
             print(rand_text(args.samples))
     else:
         rand_text(args.samples)

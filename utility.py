@@ -7,18 +7,19 @@ import weakref
 from copy import copy, deepcopy
 
 class AdderWithRefCount(abc.ABC):
-    """Base class for classes that need addition and reference counting of added objects.
+    """Base class that implements obj addition and ref counting.
 
-    If the derived class overloads the clear() method, the overload must call the base only if
-    reference counting has been enabled.
+    If the derived class overloads the clear() method, the overload must
+    call the base only if reference counting has been enabled.
     """
+
     def __init__(self, count = True):
         """Initialize attributes.
 
         counter : bool, True if reference counting is enabled
         """
         if not isinstance(count, bool):
-            raise TypeError("error: ctor param 'counter' has to be of type 'bool'")
+            raise TypeError("err: ctor param 'counter' has to be type 'bool'")
 
         # references to objects that were added to this object
         self.__froms = [] if count else None
@@ -27,32 +28,32 @@ class AdderWithRefCount(abc.ABC):
         self.__tos = [] if count else None
 
     @abc.abstractmethod
-    def _op_add(self, other):
-        """Add an object to this one.
-
-        other: subclass of this class
-        """
-
-    @abc.abstractmethod
     def __eq__(self, other):
         """Overloaded '==' operator.
 
-        other: subclass of this class, the object to compare with
+        other: subclass of this class, the obj to compare with
 
         return: bool or NotImplemented
-                bool          : True if the two objects are equal
+                bool          : True if the two objs are equal
                 NotImplemented: if there's a parameter error
         """
 
     @abc.abstractmethod
     def __bool__(self):
-        """Called when an object is used as a boolean in an expression.
+        """Called when an obj is used as a boolean in an expression.
 
-        return: bool, True if object evaluates as True
+        return: bool, True if obj evaluates as True
+        """
+
+    @abc.abstractmethod
+    def _add(self, other):
+        """Add an obj to this one.
+
+        other: subclass of this class
         """
 
     def is_add(self, other):
-        """Check if two objects can be added.
+        """Check if two objs can be added.
 
         other: subclass of this class
 
@@ -61,15 +62,15 @@ class AdderWithRefCount(abc.ABC):
         return self.__param_error(other, False)
 
     def add(self, *others):
-        """Add objects to this one.
+        """Add objs to this one.
 
         other: tuple of subclass of this class
         """
         for other in others:
-            self.__op_add(other)
+            self.__add(other)
 
     def clear(self):
-        """Clear all references of other objects to self and of self to other objects."""
+        """Clear refs of other objs to self and of self to other objs."""
         if self.__froms or self.__tos:
             for wref in self.__froms:
                 wref().tos.remove(weakref.ref(self))
@@ -78,21 +79,38 @@ class AdderWithRefCount(abc.ABC):
             self.__froms.clear()
             self.__tos.clear()
 
+    @property
+    def froms(self):
+        """Return list of refs to objs that were added to this obj.
+
+        return: list, list elements are a subclass of this class
+        """
+        return self.__froms
+
+    @property
+    def tos(self):
+        """Return list of refs to objs that this obj was added to.
+
+        return: list, list elements are a subclass of this class
+        """
+        return self.__tos
+
     def __add__(self, other):
         """Overloaded '+' operator.
 
-        other: subclass of this class, the object to add from
+        other: subclass of this class, the obj to add from
 
-        return: see __op_add()
+        return: see __add()
         """
-        return self.__op_add(other, True)
+        return self.__add(other, True)
 
     def __radd__(self, other):
         """Overloaded '+' operator.
 
-        Called when '__add__(self, other)' fails because 'self' is not a subclass of this class.
-        This call results to '__add__(other, self)' where 'other' is a subclass of this class.
-        This method is added to have better error messaging.
+        Called when '__add__(self, other)' fails because 'self' is not a
+        subclass of this class. This call results to '__add__(other, self)'
+        where 'other' is a subclass of this class. This method is added 
+        to have better error messaging.
 
         other: subclass of this class
 
@@ -103,18 +121,19 @@ class AdderWithRefCount(abc.ABC):
     def __iadd__(self, other):
         """Overloaded '+=' operator.
 
-        other: subclass of this class, the object to add from
+        other: subclass of this class, the obj to add from
 
-        return: see __op_add()
+        return: see __add()
         """
-        return self.__op_add(other)
+        return self.__add(other)
 
     def __deepcopy__(self, memo):
         """Overloaded method of the standard library copy.deepcopy().
 
-        When an object with references is copied custom behavior is required to update the
-        references. Also, if references are not shallow copied then the program never ends and
-        continues to consume more and more memory. On my system 70% of 32GB!
+        When an obj with references is copied custom behavior is
+        required to update the references. Also, if references are not
+        shallow copied then the program never ends and continues to 
+        consume more and more memory. On my system 70% of 32GB!
 
         The code was taken from
 
@@ -126,17 +145,20 @@ class AdderWithRefCount(abc.ABC):
                    int: id(obj)
                    any: type(obj)
 
-        return: subclass of this class, a newly constructed object
+        return: subclass of this class, a newly constructed obj
         """
-        obj = memo.get(id(self), None) # added these 3 lines based on the comments in the article
-        if obj:                        # to avoid possible infinite recursion (Antonín Hoskovec)
+
+        # added these 3 lines based on the comments in the article to
+        # avoid possible infinite recursion (Antonín Hoskovec)
+        obj = memo.get(id(self), None)
+        if obj:
             return obj
 
         cls = self.__class__
         obj = cls.__new__(cls)
         memo[id(self)] = obj
         for attr, value in self.__dict__.items():
-            # if shallow copy is not used we have the catastrophy described in the doc string
+            # if no shallow copy the bad side effect (see doc string)
             if '__froms' in attr:
                 setattr(obj, attr, copy(self.__froms))
             elif '__tos' in attr:
@@ -156,16 +178,18 @@ class AdderWithRefCount(abc.ABC):
         return obj
 
     def __del__(self):
-        """Clear all references of other objects to self and of self to other objects.
+        """Clear refs of other objs to self and of self to other objs.
         
-        This is useful in case an object goes out of scope and is garbage collected.
+        This is useful in case an obj goes out of scope and is garbage
+        collected.
         """
         self.clear()
 
     def _is_add(self, other):
-        """Check if other can be added to this object.
+        """Check if other can be added to this obj.
 
-        Default implementation in case a derived class does not need this method.
+        Default implementation in case a derived class does not need 
+        this method.
 
         other: subclass of this class
 
@@ -173,26 +197,10 @@ class AdderWithRefCount(abc.ABC):
         """
         return True
 
-    @property
-    def froms(self):
-        """Return a list of references to objects that were added to this object.
+    def __add(self, other, op_plus = False):
+        """Add one obj to another.
 
-        return: list, list elements are a subclass of this class
-        """
-        return self.__froms
-
-    @property
-    def tos(self):
-        """Return a list of references to objects that this object was added to.
-
-        return: list, list elements are a subclass of this class
-        """
-        return self.__tos
-
-    def __op_add(self, other, op_plus = False):
-        """Add one object to another.
-
-        other  : subclass of this class, the object to add from
+        other  : subclass of this class, the obj to add from
         op_plus: bool, True if operator '+' is used instead of '+='
 
         return: subclass of this class,
@@ -208,11 +216,11 @@ class AdderWithRefCount(abc.ABC):
         lhs = deepcopy(self) if op_plus else self
 
         if other:
-            lhs._op_add(other)
+            lhs._add(other)
 
-            # the only way to check that ref counting is enabled is to compare to 'not None'
+            # only way to check ref counting is to compare to 'not None'
             if lhs.froms is not None:
-                # add references to objects that have been added from and to
+                # add refs to objs that have been added from and to
                 lhs.froms.append(weakref.ref(other))
                 other.tos.append(weakref.ref(lhs))
                 lhs.froms.extend(other.froms)
@@ -224,45 +232,45 @@ class AdderWithRefCount(abc.ABC):
     def __param_error(self, other, stdout = True):
         """Validate parameters.
 
-        other : subclass of this class, the object to add from
+        other : subclass of this class, the obj to add from
         stdout: bool, True if errors are to be printed
 
         return: bool: True if param error
         """
         if other is self:
             if stdout:
-                print("error: can't add object to itself")
+                print("err: can't add obj to itself")
             return stdout
 
         if not isinstance(other, type(self)):
             if stdout:
-                print(f"error: 'other' = '{other}' must be of type "
+                print(f"err: 'other' = '{other}' must be of type "
                       f"'{self.__class__.__module__}.{self.__class__.__name__}'")
             return stdout
 
         if not self._is_add(other):
             if stdout:
-                print(f"error: all comparisons in method "
-                      f"'{self.__class__.__module__}.{self.__class__.__name__}._is_add()' "
-                      "must be true in order to add these two objects")
+                print(f"err: all comparisons in method "
+                      f"'{self.__class__.__module__}.{self.__class__.__name__}"
+                      "._is_add()' must be true in to add these two objs")
             return stdout
 
-        # the only way to check that ref counting is enabled is to compare to 'not None'
+        # only way to check ref counting is to compare to 'not None'
         if self.__froms is not None:
             if weakref.ref(other) in self.__froms:
                 if stdout:
-                    print("error: 'other' has already been added to 'self'")
+                    print("err: 'other' already added to 'self'")
                 return stdout
 
             for wref in other.froms:
                 if wref is weakref.ref(self):
                     if stdout:
-                        print("error: 'self' has already been added to 'other'")
+                        print("err: 'self' already added to 'other'")
                     return stdout
 
                 if wref in self.froms:
                     if stdout:
-                        print("error: part of 'other' has already been added to 'self'")
+                        print("err: part of 'other' already added to 'self'")
                     return stdout
 
         return not stdout
@@ -275,33 +283,36 @@ def get_filenames(filenames, old_filenames = None ):
 
     return: set(str): valid filenames
     """
+
     # keep unique filenames only and get their absolute path
     filenames = set(os.path.abspath(filename) for filename in filenames)
 
-    for filename in filenames.copy(): # remove filenames that don't exist
+    for filename in filenames.copy(): # remove fnames that don't exist
         if not os.path.exists(filename):
             filenames.remove(filename)
-            print(f"error: {filename!r} does not exist\n")
+            print(f"err: {filename!r} does not exist\n")
 
-    filenames -= old_filenames if old_filenames else set() # remove old filenames
+    # remove old filenames
+    filenames -= old_filenames if old_filenames else set()
 
     return filenames
 
-def in_bisect(sorted_seq, val, pos = False, begin = -1, end = -1):
+def in_bisection(sorted_seq, val, pos = False, begin = -1, end = -1):
     """Search the sorted sequence to find a value.
 
-    The sequence must be sorted ascendingly. Optionally, a begin and end index may be specified if
-    searching in a subsequence is desired. The default values of begin and end correspond to the
-    entire sequence.
+    The sequence must be sorted ascendingly. Optionally, a begin and end
+    index may be specified if searching in a subsequence is desired. The
+    default values of begin and end correspond to the entire sequence.
 
     sorted_seq: str, list, range or tuple
-    val       : The value to search for. The type of val must be a type that is comparable with the
-                type of the elements of the sequence.
+    val       : The value to search for. The type of val must be a type
+                that is comparable with the type of the elements of the 
+                sequence.
     pos       : bool, if True return position even if 'val' is not found
-    begin     : int, <= end and > -2, the begin index, defaults to -1 which is the beginning of the
-                sequence
-    end       : int, >= begin and > -2, the end index, defaults to -1 which is the end of the
-                sequence
+    begin     : int, <= end and > -2, the begin index, defaults to -1 
+                which is the beginning of the sequence
+    end       : int, >= begin and > -2, the end index, defaults to -1
+                which is the end of the sequence
 
     return: int or
             None if 'pos == False' and no index is found
@@ -330,7 +341,7 @@ def in_bisect(sorted_seq, val, pos = False, begin = -1, end = -1):
 
 _BASE = 10
 
-def is_num_palindrome(num, begin = 0, end = 0):
+def is_palindrome(num, begin = 0, end = 0):
     """Check if a number is a palindrome.
 
     If both begin and end are zero all digits of the number are checked.
@@ -341,14 +352,16 @@ def is_num_palindrome(num, begin = 0, end = 0):
 
     return: bool, True if num is a palidrome
     """
-    # extract the number and the number of digits based on begin and end positions
+
+    # extract num and the num of digits based on begin and end positions
     num, digits = extract(num, begin, end)
 
-    # to find if a number is a palindrome check every pair of digits in the number as follows:
-    # 1234321 -> 1234321 -> 1234321 -> 1234321 -> it is a palindrome
+    # to check if num is palindrome compare pairs of digits as follows:
+    # 1234321 -> 1234321 -> 1234321 -> 1234321 -> is palindrome
     # ^     ^     ^   ^       ^ ^         ^
-    # so the max number of pairs is (digits // 2), e.g. the max number of pairs for 1234321 is
-    # (7 // 2) = 3
+    #
+    # thus, max number of pairs is (digits // 2), e.g. max num of pairs
+    # for 1234321 is (7 // 2) = 3
     for pos in range( digits // 2):
         # calculate the high order digit
         high = (num // (_BASE ** (digits - (pos + 1)))) % _BASE
@@ -361,7 +374,7 @@ def is_num_palindrome(num, begin = 0, end = 0):
 
     return True
 
-def reverse_num(num, begin = 0, end = 0):
+def reverse(num, begin = 0, end = 0):
     """Return the reverse of a number.
 
     num  : int, the number to reverse
@@ -370,15 +383,17 @@ def reverse_num(num, begin = 0, end = 0):
 
     return: int, the number reversed
     """
-    # extract the number and the number of digits based on begin and end positions
+
+    # extract num and num of digits based on begin and end positions
     num, digits = extract(num, begin, end)
 
-    # to reverse a number reverse every pair of digits in the number like this:
+    # to reverse a number reverse every pair of digits like this:
     # 1234567 -> 7234561 -> 7634521 -> 7654321
     # ^     ^     ^   ^       ^ ^
     #  (1,7)      (2,6)      (3,5)
-    # so the max number of pairs is (digits // 2), e.g. the max number of pairs for 1234567 is
-    # (7 // 2) = 3
+    #
+    # so max num of pairs is (digits // 2), e.g. max num of pairs for
+    # 1234567 is (7 // 2) = 3
     rev = 0
     pairs = digits // 2
     for pos in range(pairs):
@@ -390,13 +405,14 @@ def reverse_num(num, begin = 0, end = 0):
         # calculate the low order digit
         low = (num % (_BASE ** (pos + 1))) // (_BASE ** pos)
 
-        # Calculate the reversed number based on high and low digit. Note that the low digit has to
-        # be multiplied by power to become the new high digit
+        # Calculate the reversed number based on high and low digit.
+        # Note that the low digit has to be multiplied by power to 
+        # become the new high digit
         rev += (low * power) + (high * (_BASE ** pos))
 
-    # For numbers with odd number of digits the middle digit is not part of a pair so it is not
-    # extracted by the loop above. The following statements extract the middle number and add it
-    # to the reversed number.
+    # For nums with odd num of digits the middle digit is not part of a
+    # pair so it is not extracted by the loop above. The following
+    # statements extract the middle num and add it to the reversed num.
     if digits % 2:
         middle_num = num % (_BASE ** ((digits + 1) // 2))
         rev += (middle_num - (middle_num % (_BASE ** (pairs))))
@@ -404,7 +420,7 @@ def reverse_num(num, begin = 0, end = 0):
     return rev
 
 def extract(num, begin, end):
-    """Extract the number from begin and end positions within the number.
+    """Extract num from begin and end positions within the num.
 
     num  : int
     begin: int, the digit in num to begin the extraction from
@@ -428,7 +444,7 @@ def extract(num, begin, end):
     digits += 1
 
     if begin:
-        if begin > digits: # this is a special case where num = 0 and digits = 1
+        if begin > digits: # special case where num = 0 and digits = 1
             end = begin
         elif not end: # if end is unspecified set it to maximum
             end = digits
@@ -446,7 +462,7 @@ def cmpfiles(file1, file2):
 
     return: bool, False if files are the same
     """
-    cmd = f"fc /U {file1} {file2}" # command on windows to compare two text files
+    cmd = f"fc /U {file1} {file2}" # windows cmd to cmp two text files
 
     pipe = os.popen(cmd) # open pipe and initialize with cmd
     stat = pipe.close()  # get status of cmd, i.e. success or failure
@@ -464,15 +480,16 @@ def md5(filename):
 
     # command on Windows to produce md5 value for a file
     cmd = "certutil -hashfile " + filename + " MD5"
-    pipe = os.popen(cmd)                     # open pipe and initialize with cmd
-    res = pipe.read()                        # read results of cmd
-    stat = pipe.close()                      # get status of cmd, i.e. success or failure
-    if not stat:                             # if not failure
-        begin = res.find('\n')               # find beginning of md5 value
-        if begin != -1:                      # -1 means find failed
-            end = res.find('\n', begin+1)    # find end of md5 value
-            if end != -1:                    # -1 means find failed
-                md5_val = res[begin+1:end]   # extract the md5 value
+    pipe = os.popen(cmd)                   # open pipe and init with cmd
+    res = pipe.read()                      # read results of cmd
+    stat = pipe.close()                    # get status of cmd, i.e.
+                                           # success or failure
+    if not stat:                           # if not failure
+        begin = res.find('\n')             # find beginning of md5 value
+        if begin != -1:                    # -1 means find failed
+            end = res.find('\n', begin+1)  # find end of md5 value
+            if end != -1:                  # -1 means find failed
+                md5_val = res[begin+1:end] # extract the md5 value
 
     return md5_val
 
@@ -487,21 +504,21 @@ def _param_error_bisect(seq, pos, begin, end):
     return: True if params error is found
     """
     if not isinstance(seq, collections.abc.Sequence):
-        print("error: 'seq' has to be a sequence")
+        print("err: 'seq' has to be a sequence")
         return True
     if not seq:
         return True
     if not isinstance(pos, bool):
-        print("error: 'pos' must be of 'bool' type")
+        print("err: 'pos' must be of 'bool' type")
         return True
     if not isinstance(begin, int) or not isinstance(end, int):
-        print("error: 'begin' and 'end' must be of 'int' type")
+        print("err: 'begin' and 'end' must be of 'int' type")
         return True
     if begin > end:
-        print("error: (begin > end) is not allowed")
+        print("err: (begin > end) is not allowed")
         return True
     if begin < -1 or end < -1:
-        print("error: (begin < -1 or end < -1) is not allowed")
+        print("err: (begin < -1 or end < -1) is not allowed")
         return True
 
     return False
@@ -514,14 +531,16 @@ def _param_error_num(num, begin, end):
     end  : int, the last digit in num to use
 
     exceptions: TypeError , if any parameter is not of type int
-                ValueError, if begin and/or end have wrong integer values (see below)
+                ValueError, if begin and/or end have wrong integer
+                            values (see below)
 
     return: bool, False if no error
     """
-    if not isinstance(num, int) or not isinstance(begin, int) or not isinstance(end, int):
-        raise TypeError("error: all parameters have to be of type 'int'")
+    if not isinstance(num, int) or not isinstance(begin, int) or \
+       not isinstance(end, int):
+        raise TypeError("err: all parameters have to be of type 'int'")
     if begin < 0 or end < 0 or (begin > end and end):
-        raise ValueError("error: (begin < 0 or end < 0 or begin > end) is not allowed")
+        raise ValueError("err: (beg < 0 or end < 0 or beg > end) not allowed")
     if not begin and end:
-        raise ValueError("error: when specifying a range, 'begin' cannot be zero -> "
-                        f"[{begin}, {end}]")
+        raise ValueError("err: when specifying range, 'begin' can't be zero "
+                        f"-> [{begin}, {end}]")

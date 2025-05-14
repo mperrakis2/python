@@ -1,21 +1,25 @@
-"""This program plays the game of tic tac toe with the user. The computer's moves are random and
-not based on any AI.
+"""This program plays the game of tic tac toe with the user. The
+computer's moves are random and not based on any AI.
 
-The computer always uses the 'X' symbol and starts first by placing the 'X' in the center position.
-Positions are numbered from 1 to 9 and the center position is 5. The user may choose any number
-from 1 to 9 to place the 'O' in the desired position.
+The computer always uses the 'X' symbol and starts first by placing the
+'X' in the center position. Positions are numbered from 1 to 9 and the
+center position is 5. The user may choose any number from 1 to 9 to
+place the 'O' in the desired position.
 """
 import sys
 from random import randrange
 
 class TicTacToe:
-    """Implements tic tac toe functionality. Computer moves are random, not based on AI."""
+    """Implements tic tac toe functionality. Computer moves are random,
+    not based on AI."""
     __STRIKE = 3 # used for printing and to determine a winner
-    __REPEAT = 7 # number of repetitions for the fill char when printing the tic tac toe square
+    __REPEAT = 7 # number of repetitions for the fill char when printing
+                 # the tic tac toe square
 
     def __init__(self):
         """ctor"""
-        # init tic tac toe square, computer always has the first move placing 'X' in the center
+        # init tic tac toe square, computer always has the first move
+        # placing 'X' in the center
         self.__board = [[1, 2, 3], [4, 'X', 6], [7, 8, 9]]
 
     def display_board(self):
@@ -54,15 +58,19 @@ class TicTacToe:
         while True: # loop until input is valid
             try:
                 num = int(input("Enter your move: "))
-                row, col = divmod(num - 1, TicTacToe.__STRIKE) # map move to square coordinates
+
+                # map move to square coordinates
+                row, col = divmod(num - 1, TicTacToe.__STRIKE)
 
                 # if coordinates don't exist raise error
                 if (row, col) not in self.__free_fields():
                     raise ValueError
-                self.__board[row][col] = 'O' # update board with user's move
+
+                # update board with user's move
+                self.__board[row][col] = 'O'
                 break
 
-            # the user entered wrong data so display list of valid choices
+            # user entered wrong data so display list of valid choices
             except ValueError:
                 print("Your move has to be one of: ", end = "")
                 for row, col in self.__free_fields():
@@ -73,17 +81,22 @@ class TicTacToe:
         """Draw random move, not AI based, on behalf of the computer."""
         while True:
             choice = randrange(1, TicTacToe.__STRIKE ** 2)
-            row, col = divmod(choice - 1, TicTacToe.__STRIKE) # map choice to square coordinates
+
+            # map choice to square coordinates
+            row, col = divmod(choice - 1, TicTacToe.__STRIKE)
 
             # if coordinates are used try again
             if (row, col) not in self.__free_fields():
                 continue
-            self.__board[row][col] = 'X' # update board with computer's move
+
+            # update board with computer's move
+            self.__board[row][col] = 'X'
             break
 
     @property
     def board(self):
-        """return: list of list of int, the representation fo the tic tac toe board"""
+        """return: list of list of int, the representation fo the tic
+        tac toe board"""
         return self.__board
 
     def __str__(self):
@@ -98,9 +111,9 @@ class TicTacToe:
         return board
 
     def __repr__(self):
-        """Called when calling the representation (repr(tictactoe_obj)) of a tic tac toe object.
+        """Called when calling repr(obj) on a tic tac toe object.
 
-        return: str, the representation which allows a tic tac toe object to be identified
+        return: str, repr to allow tic tac toe object to be identified
         """
         return f"<type: {self.__class__.__module__}.{self.__class__.__name__},"\
                f" id: {id(self)}>"
@@ -111,7 +124,7 @@ class TicTacToe:
         other: TicTacToe, the tic tac toe object to compare with
 
         return: bool or NotImplemented
-                bool          :True if the two anagram objects are equal
+                bool          : True if two anagram objects are equal
                 NotImplemented: if there's a parameter error
         """
         if not isinstance(other, TicTacToe):
@@ -176,11 +189,15 @@ def main():
     tic_tac_toe = TicTacToe()
     while True:
         tic_tac_toe.display_board()
-        if tic_tac_toe.game_over('X'): # check if game is over after computer's move
+
+        # check if game is over after computer's move
+        if tic_tac_toe.game_over('X'):
             break
         tic_tac_toe.enter_move() # accept user's move
         tic_tac_toe.display_board()
-        if tic_tac_toe.game_over('O'): # check if game is over after user's move
+
+        # check if game is over after user's move
+        if tic_tac_toe.game_over('O'):
             break
         tic_tac_toe.draw_move() # draw random move for computer
 
@@ -189,7 +206,8 @@ def main():
 def _display_line(iterable, edge, filler):
     """Display a line of the tic tac toe square on the screen.
 
-    iterable: any iterable, the number of iterations required to print a line on screen
+    iterable: any iterable, the number of iterations required to print a
+              line on screen
     edge    : str, the first and last char to print
     filler  : str, the chars between the edges
     """

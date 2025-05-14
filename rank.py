@@ -1,8 +1,10 @@
-"""This program creates a sorted list of frequencies of words read from one or more files. The list
-is sorted in descending order, i.e the highest frequency is first. Every element of the list also
-contains a rank for the word. The highest frequency has the lowest rank. Also, every element in the
-list contains a pair of logarithmic values. The first value is the logarithm of the frequency and
-the second the logarithm of the rank.
+"""This program creates a sorted list of frequencies of words read from
+one or more files. The list is sorted in descending order, i.e the
+highest frequency is first. Every element of the list also contains a
+rank for the word. The highest frequency has the lowest rank. Also,
+every element in the list contains a pair of logarithmic values. The
+first value is the logarithm of the frequency and the second the
+logarithm of the rank.
 """
 import string
 import math
@@ -13,11 +15,11 @@ import argparse
 
 import utility
 
-# Inherit class that provides functionality for adding two instances of the derived class and
-# reference counting as well.
+# Inherit class that provides functionality for adding two instances of
+# the derived class and reference counting as well.
 class WordFreq(utility.AdderWithRefCount):
-    """Provides functionality to read text files and create data structures of the words read based
-    on their frequency.
+    """Provides functionality to read text files and create data
+    structures of the words read based on their frequency.
     """
     def __init__(self):
         """ctor"""
@@ -25,10 +27,10 @@ class WordFreq(utility.AdderWithRefCount):
         self.__reset()
 
     def insert(self, *filenames, reset = False):
-        """Populate a dictionary of word frequencies based on the files read.
+        """Populate dict of word frequencies based on the files read.
 
         filenames: tuple of str
-        reset    : bool, True if all existing word freqs are to be cleared
+        reset    : bool, True if existing word freqs are to be cleared
 
         return: bool, True if successful
         """
@@ -41,8 +43,8 @@ class WordFreq(utility.AdderWithRefCount):
         filenames = utility.get_filenames(filenames, self.__filenames)
         if filenames:
             try:
-                # read the contents of the text files and create a dictionary of frequencies of
-                # words
+                # read the contents of the text files and create a
+                # dictionary of frequencies of words
                 with fileinput.input(filenames, encoding="utf-8") as file:
                     for line in file:
                         self.__increment(line)
@@ -55,12 +57,12 @@ class WordFreq(utility.AdderWithRefCount):
 
     @property
     def freqs(self):
-        """Return a list of frequencies of words sorted in descending order.
+        """Return list of frequencies of words sorted descendingly.
 
         return: list(tuple(tuple(str, int, int), tuple(float, float)))
 
-                                (str, int, int): word, frequency, rank
-                                (float, float) : log10(frequency), log10(rank)
+                          (str, int, int): word, frequency, rank
+                          (float, float) : log10(frequency), log10(rank)
         """
         self.__sort()
 
@@ -98,11 +100,12 @@ class WordFreq(utility.AdderWithRefCount):
         return sorted_freqs
 
     def __repr__(self):
-        """Called when calling the representation (repr(word_freq_obj)) of a word freq object.
+        """Called when calling repr(obj) on a word freq object.
 
-        return: str, the representation which allows an object equal to this one to be created
+        return: str, repr to allow obj equal to this one to be created
         """
-        word_freq = f"word_freq = {self.__class__.__module__}.{self.__class__.__name__}()"
+        word_freq = f"word_freq = {self.__class__.__module__}."\
+                    f"{self.__class__.__name__}()"
         if self.__filenames:
             word_freq += "\nword_freq.add(True, "
             for filename in self.__filenames:
@@ -116,7 +119,7 @@ class WordFreq(utility.AdderWithRefCount):
         return self.freqs
 
     def __bool__(self):
-        """Called when a word freq object is used as a boolean in an expression.
+        """Called when word freq obj is used as bool in expression.
 
         return: bool, see __len__()
         """
@@ -146,14 +149,14 @@ class WordFreq(utility.AdderWithRefCount):
         return self.__filenames == other.filenames
 
     def __iter__(self):
-        """Implemented to allow iterating over the word frequencies list.
+        """Allows iterating over word frequencies list.
 
         return: iterator object
         """
         return iter(self.freqs)
 
     def __reversed__(self):
-        """Implemented to allow iterating in reverse order over the word frequencies list.
+        """Allows iterating in reverse order over word frequencies list.
 
         return: iterator object
         """
@@ -168,14 +171,14 @@ class WordFreq(utility.AdderWithRefCount):
         """
         return self.__freqs != other.freqs_internal
 
-    def _op_add(self, other):
+    def _add(self, other):
         """ Add a word freq object to this one.
 
             other: WordFreq
         """
         self.__filenames |= other.filenames
 
-        if not self.__freqs: # if self is empty just do a deep copy of word freqs
+        if not self.__freqs: # if self empty deepcopy of word freqs
             self.__freqs = copy.deepcopy(other.freqs_internal)
             return
 
@@ -189,7 +192,9 @@ class WordFreq(utility.AdderWithRefCount):
         #      str: a word read from one or more text files
         #      int: the total frequency of the word in all text files
         self.__freqs = {}
-        self.__sorted_freqs = [] # pairs of (word, frequency) sorted descendingly by frequency
+
+        # pairs of (word, frequency) sorted descendingly by frequency
+        self.__sorted_freqs = []
         self.__filenames = set() # files read
 
     def __increment(self, line):
@@ -203,12 +208,13 @@ class WordFreq(utility.AdderWithRefCount):
             self.__freqs[word] = self.__freqs.get(word, 0) + 1
 
     def __sort(self):
-        """Populate a list of frequencies of words sorted in descending order."""
+        """Populate list of frequencies of words sorted descendingly."""
         if self.__freqs:
             # populate a list of frequencies of words
             while self.__freqs:
                 pair = self.__freqs.popitem()
-                # if the word already exists, append the frequency else add the word as a new entry
+                # if the word already exists, append the frequency else
+                # add the word as a new entry
                 for sorted_freq in self.__sorted_freqs:
                     if sorted_freq[0][0] == pair[0]:
                         sorted_freq[0][1] += pair[1]
@@ -221,8 +227,8 @@ class WordFreq(utility.AdderWithRefCount):
                                                                 sorted_freq[0][0]),
                                      reverse = True)
 
-            # iterate through the sorted list and add the rank in ascending order as well as the
-            # logarithms of the frequency and rank
+            # iterate through sorted list and add the rank ascendingly
+            # as well as logarithms of frequency and rank
             prev_freq = rank_num = 0
             for i, sorted_freq in enumerate(self.__sorted_freqs):
                 if sorted_freq[0][1] != prev_freq:
@@ -238,11 +244,14 @@ def main():
     return: int, success or failure
     """
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter,
-                                     description = "Print the frequency of words read from the "
-                                                   "text files specified by the user.",
+                                     description = "Print the frequency of "
+                                                   "words read from the text "
+                                                   "files specified by the user.",
                                      epilog = 'usage example: '
-                                              f'python {sys.argv[0]} sample.txt sample2.txt')
-    parser.add_argument('files', nargs='+', metavar = 'file', help = "the file(s) to read")
+                                              f'python {sys.argv[0]} '
+                                              'sample.txt sample2.txt')
+    parser.add_argument('files', nargs='+', metavar = 'file',
+                        help = "the file(s) to read")
     args  = parser.parse_args()
 
     result, word_freq = rank(*args.files)
@@ -265,7 +274,7 @@ def rank(*filenames):
     """
     word_freq = WordFreq()
 
-    # create an object of word frequencies based on the text file(s) read
+    # create object of word frequencies based on the text file(s) read
     result = word_freq.insert(*filenames)
 
     return result, word_freq

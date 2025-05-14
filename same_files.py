@@ -1,5 +1,6 @@
-"""This programs goes through a list or tuple of files with a specific extention and checks whether
-files with exactly the same contents exist using md5.
+"""This programs goes through a list or tuple of files with a specific
+extention and checks whether files with exactly the same contents exist
+using md5.
 """
 import sys
 import os
@@ -9,8 +10,9 @@ import directory
 import utility
 
 _DESC = """\
-Read files with a specific extention under a directory and create an MD5 value for each file. Print
-the files that have the same MD5 value and then double check that their contents are identical.
+Read files with a specific extention under a directory and create an MD5
+value for each file. Print the files that have the same MD5 value and
+then double check that their contents are identical.
 """
 
 def main():
@@ -20,9 +22,12 @@ def main():
     """
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter,
                                      description = _DESC,
-                                     epilog = f'usage example: python {sys.argv[0]} . .py')
-    parser.add_argument('-d', '--dir', required = True, help = "read files under this directory")
-    parser.add_argument('-e', '--ext', required = True, help = "the file extention")
+                                     epilog = 'usage example: python '
+                                              f'{sys.argv[0]} . .py')
+    parser.add_argument('-d', '--dir', required = True,
+                        help = "read files under this directory")
+    parser.add_argument('-e', '--ext', required = True,
+                        help = "the file extention")
     args  = parser.parse_args()
 
     # get all files under the args.dir that have extention args.ext
@@ -30,9 +35,10 @@ def main():
 
     # print all filenames that have the same content
     for md5_val, fnames in _md5_filenames(filenames).items():
-        if len(fnames) > 1:        # more than one file with same content has been found
+        # more than one file with same content has been found
+        if len(fnames) > 1:        
             print(md5_val, fnames) # print filenames with same content
-            _cmpfiles(fnames)      # double check files have the same content
+            _cmpfiles(fnames)      # check files have same content
 
     return 0
 
@@ -47,7 +53,8 @@ def _md5_filenames(filenames):
     """
     md5_fnames = {}
 
-    for filename in utility.get_filenames(filenames): # get full path of filenames
+    # get full path of filenames
+    for filename in utility.get_filenames(filenames):
         try:
             size = os.path.getsize(filename)
         except OSError as exc:
@@ -55,21 +62,27 @@ def _md5_filenames(filenames):
                   f"the following exception occured: {exc}")
         else:
             if size > 0: # md5 can't be calculated on empty files
-                md5_val = utility.md5(filename) # calculate md5 value for given file
+                # calculate md5 value for given file
+                md5_val = utility.md5(filename)
                 if md5_val:
-                    # get value for key=md5_val if one exists else get the emtpy list
+                    # get value for key=md5_val if one exists else get
+                    # emtpy list
                     file_names = md5_fnames.setdefault(md5_val, [])
-                    file_names.append(filename) # add filename to filename list
+
+                    # add filename to filename list
+                    file_names.append(filename)
                 else:
-                    print(f"error: could not calculate md5 value of file '{filename}'. "
-                           "File can't be compared.")
+                    print("error: could not calculate md5 value of file "
+                          f"'{filename}'. "
+                          "File can't be compared.")
 
     return md5_fnames
 
 def _cmpfiles(filenames):
     """Compare all files in 'filenames'.
 
-    Comparison is based on file contents. Print filenames that are not identical.
+    Comparison is based on file contents. Print filenames that are not
+    identical.
 
     filenames: list of str
     """

@@ -1,11 +1,12 @@
-"""This program calculates the probability that a single birthday occurs a certain number of times
-within a set of birthdays that make a sample. The number of birthdays in a sample make up one
-iteration.
+"""This program calculates the probability that a single birthday occurs
+a certain number of times within a set of birthdays that make a sample.
+The number of birthdays in a sample make up one iteration.
 
 To get statistically accurate results many iterations are executed.
 
-When a birthday occurs a certain number of times within an iteration the total number of matches is
-incremented. Thus, the probability that a birthday occurs a certain number of times is
+When a birthday occurs a certain number of times within an iteration the
+total number of matches is incremented. Thus, the probability that a
+birthday occurs a certain number of times is
 (total number of matches / iterations).
 """
 import sys
@@ -14,61 +15,69 @@ import argparse
 
 import utility
 
-# Inherit class that provides functionality for adding two instances of the derived class and
-# reference counting as well.
+# Inherit class that provides functionality for adding two instances of
+# the derived class and reference counting as well.
 class Birthday(utility.AdderWithRefCount):
-    """Provide functionality to generate random birthdays within a year range specified by the
-    user. Calculate if a single birthday occurs more than once within the generated random
-    birthdays and save the number of matches.
+    """Provide functionality to generate random birthdays within a year
+    range specified by the user. Calculate if a single birthday occurs
+    more than once within the generated random birthdays and save the
+    number of matches.
     """
     ITERATIONS = 10_000
     SAMPLES = 23
     BEGIN_YEAR = 1941
     END_YEAR = 2001
-    OCCUR = 2
+    COUNT = 2
 
     def __init__(self):
         """ctor"""
         super().__init__()
-        self.__iterations = Birthday.ITERATIONS # number of iterations to execute
-        self.__samples = Birthday.SAMPLES # number of samples per iteration
-        self.__begin_year = Birthday.BEGIN_YEAR # earliest birth year to generate
-        self.__end_year = Birthday.END_YEAR # oldest birth year to generate
-        self.__occur = Birthday.OCCUR # expected number of same birthdays per iteration
-        self.__hits = 0 # number of same birthdays per iteration
+        self.__iterations = Birthday.ITERATIONS # iterations to execute
+        self.__samples = Birthday.SAMPLES # samples per iteration
+        self.__begin_year = Birthday.BEGIN_YEAR # earliest birth year
+        self.__end_year = Birthday.END_YEAR # oldest birth yea
+        self.__count = Birthday.COUNT # same birthdays per iteration
+        self.__hits = 0 # num of same birthdays per iteration
 
     def generate(self,
                  iterations = ITERATIONS,
                  samples = SAMPLES,
                  begin_year = BEGIN_YEAR,
                  end_year = END_YEAR,
-                 occur = OCCUR,
+                 count = COUNT,
                  append = False):
-        """Calculate the probability that a birthday occurs certain times within a sample.
+        """Calculate the probability of birthday occuring within sample.
 
-        'samples' is the maximun number of birthdays generated in a single iteration. To get
-        statistically accurate results, the iteration is repeated a number of times equal to
-        'iterations'. Thus, the maximum number of birthdays that can be generated is
+        'samples' is the maximun number of birthdays generated in a 
+        single iteration. To get statistically accurate results, the
+        iteration is repeated a number of times equal to 'iterations'.
+        Thus, the maximum number of birthdays that can be generated is
         'samples' * 'iterations'.
 
-        When a birthday occurs certain times within an iteration the total number of matches is
-        incremented.
+        When a birthday occurs certain times within an iteration the
+        total number of matches is incremented.
 
-        iterations: int, the number of times to iterate in order to generate a number of birthdays
-                    per iteration.
-        samples   : int, the maximum number of birthdays generated in a single iteration
-        begin_year: int, the gererated random years should not be earlier than this year
-        end_year  : int, the gererated random years should not be later than this year
-        occur     : int, the number of times a single birthday should occur within a sample
-        append    : bool, if True append to current matches else just generate new ones
+        iterations: int, the number of times to iterate in order to 
+                    generate a number of birthdays per iteration.
+        samples   : int, the maximum number of birthdays generated in a
+                    single iteration
+        begin_year: int, gererated random years should not be earlier
+                    than this year
+        end_year  : int, the gererated random years should not be later
+                    than this year
+        count     : int, the number of times a single birthday should
+                    occur within a sample
+        append    : bool, if True append to current matches else just
+                    generate new ones
         """
-        _param_error(iterations, samples, begin_year, end_year, occur, append)
+        _param_error(iterations, samples, begin_year, end_year, count, append)
 
-        self.__reset(iterations, samples, begin_year, end_year, occur, append)
+        self.__reset(iterations, samples, begin_year, end_year, count, append)
 
         for i in range(iterations):
-            # Generate a maximum number of birthdays equal to 'samples'. If the number of birthdays
-            # that are the same is equal to 'occur' then a match (the number one) is returned.
+            # Generate a maximum number of birthdays equal to 'samples'.
+            # If the number of birthdays that are the same is equal to 
+            # 'count' then a match (the number one) is returned.
             self.__hits += self.__generate()
 
     @property
@@ -97,9 +106,9 @@ class Birthday(utility.AdderWithRefCount):
         return self.__end_year
 
     @property
-    def occur(self):
-        """return: int, the number of times of a birthday within a sample"""
-        return self.__occur
+    def count(self):
+        """return: int, num of times of a birthday within a sample"""
+        return self.__count
 
     def clear(self):
         """Clear all birthday data."""
@@ -107,7 +116,7 @@ class Birthday(utility.AdderWithRefCount):
                      Birthday.SAMPLES,
                      Birthday.BEGIN_YEAR,
                      Birthday.END_YEAR,
-                     Birthday.OCCUR,
+                     Birthday.COUNT,
                      False)
         super().clear()
 
@@ -121,7 +130,7 @@ class Birthday(utility.AdderWithRefCount):
         bday_data  = f"samples   : {self.__samples}\n"
         bday_data += f"begin year: {self.__begin_year}\n"
         bday_data += f"end year  : {self.__end_year}\n"
-        bday_data += f"occurences: {self.__occur}\n\n"
+        bday_data += f"occurences: {self.__count}\n\n"
         bday_data += f"matches   : {self.__hits}\n"
         bday_data += f"iterations: {self.__iterations}\n\n"
         bday_data += f"(matches / iterations) = ({self.__hits} / {self.__iterations}) = " \
@@ -130,9 +139,9 @@ class Birthday(utility.AdderWithRefCount):
         return bday_data
 
     def __repr__(self):
-        """Called when calling the representation (repr(birthday_obj)) of a birthday object.
+        """Called when calling repr(obj) on a birthday obj.
 
-        return: str, the representation which allows a birthday object to be identified
+        return: str, the repr which identifies a birthday obj
         """
         return f"<type: {self.__class__.__module__}.{self.__class__.__name__},"\
                f" id: {id(self)}>"
@@ -142,7 +151,7 @@ class Birthday(utility.AdderWithRefCount):
         return self.matches
 
     def __bool__(self):
-        """Called when a birthday object is used as a boolean in an expression.
+        """Called when birthday object is used as a bool in expression.
 
         return: bool
         """
@@ -176,9 +185,9 @@ class Birthday(utility.AdderWithRefCount):
         return self.__samples == other.samples and \
                self.__begin_year == other.begin_year and \
                self.__end_year == other.end_year and \
-               self.__occur == other.occur
+               self.__count == other.count
 
-    def _op_add(self, other):
+    def _add(self, other):
         """ Add a birthday object to this one.
 
             other: Birthday
@@ -186,22 +195,27 @@ class Birthday(utility.AdderWithRefCount):
         self.__iterations += other.iterations
         self.__hits += other.matches
 
-    def __reset(self, iterations, samples, begin_year, end_year, occur, append):
+    def __reset(self, iterations, samples, begin_year, end_year, count, append):
         """Reset attributes.
 
-        iterations: int, the number of times to iterate in order to generate a number of birthdays
-                    ('samples') per iteration.
-        samples   : int, the maximum number of birthdays generated in a single iteration
-        begin_year: int, the gererated random years should not be earlier than this year
-        end_year  : int, the gererated random years should not be later than this year
-        occur     : int, the number of times a single birthday should occur within a sample
-        append    : bool, if True append to current matches else just generate new ones
+        iterations: int, the num of times to iterate to generate a num 
+                    of birthdays ('samples') per iteration.
+        samples   : int, the maximum number of birthdays generated in a 
+                    single iteration
+        begin_year: int, gererated random years should not be earlier
+                    than this year
+        end_year  : int, the gererated random years should not be later
+                    than this year
+        count     : int, the number of times a single birthday should
+                    occur within a sample
+        append    : bool, if True append to current matches else just
+                    generate new ones
         """
         if append and \
            (self.__samples != samples or \
             self.__begin_year != begin_year or \
             self.__end_year != end_year or \
-            self.__occur != occur):
+            self.__count != count):
             raise ValueError("error: when appending, the current values of "
                              "samples, begin year, end year and occurences "
                              "must be the same as the new ones")
@@ -216,40 +230,41 @@ class Birthday(utility.AdderWithRefCount):
             self.__begin_year = begin_year
         if self.__end_year != end_year:
             self.__end_year = end_year
-        if self.__occur != occur:
-            self.__occur = occur
+        if self.__count != count:
+            self.__count = count
         if not append:
             self.__hits = 0
 
     def __generate(self):
         """Generate birthday samples.
 
-        Generate birthday samples until a sample appears a certain number of times or the maximum
-        number of samples is generated.
+        Generate birthday samples until a sample appears a certain
+        number of times or the maximum number of samples is generated.
 
-        A birthday is a tuple in the form (year, month, day) where 'year', 'month' and 'day' are
-        ints.
+        A birthday is a tuple in the form (year, month, day) where 
+        'year', 'month' and 'day' are ints.
 
-        return: int, 1 if a single birthday has occured a number of times, 0 otherwise
+        return: int, 1 if a birthday has occured a number of times,
+                0 otherwise
         """
         bdays = set()
-        occur = self.__occur
+        count = self.__count
         for i in range(self.__samples):
             year = random.randint(self.__begin_year, self.__end_year)
             month = random.randint(1, 12)
-            if month in (1, 3, 5, 7, 8, 10, 12):
-                day = random.randint(1, 31) # day up to 31 days
-            elif month in (4, 6, 9, 11):
-                day = random.randint(1, 30) # day up to 30 days
-            elif _leap_year(year):
-                day = random.randint(1, 29) # february and leap, day up to 29 days
-            else:
-                day = random.randint(1, 28) # february and not leap, day up to 28 days
+            if month in (1, 3, 5, 7, 8, 10, 12): # <= 31 days
+                day = random.randint(1, 31)
+            elif month in (4, 6, 9, 11):  # <= 30 days
+                day = random.randint(1, 30)
+            elif _leap_year(year):        # feb and leap, <= 29 days
+                day = random.randint(1, 29)
+            else:                         # feb and not leap, <= 28 days
+                day = random.randint(1, 28) 
 
             bday = (year, month, day)
             if bday in bdays:
-                occur -= 1
-                if occur == 1:
+                count -= 1
+                if count == 1:
                     return 1
             else:
                 bdays.add(bday)
@@ -257,8 +272,8 @@ class Birthday(utility.AdderWithRefCount):
         return 0
 
 _DESC = """\
-Generate random birthdays based on user input and calculate the probability of a single birthday
-being generated more than once.
+Generate random birthdays based on user input and calculate the probability of
+a single birthday being generated more than once.
 """
 
 def main():
@@ -273,11 +288,12 @@ def main():
                                               ' -i 20000 -s 25 -b 1941 -e 2001 -o 3')
     parser.add_argument('-i', '--iterations', type = int,
                         default = 10000,
-                        help = "the number of iterations to run, must be > 0 (default: 10000)")
+                        help = "the number of iterations to run, must be > 0 "
+                               "(default: 10000)")
     parser.add_argument('-s', '--samples', type = int,
                         default = 23,
-                        help = "the number of random birthdays to generate per iteration"
-                               ", must be > 1 (default: 23)")
+                        help = "the number of random birthdays to generate per "
+                               "iteration, must be > 1 (default: 23)")
     parser.add_argument('-b', '--begin-year', type = int, dest = "begin_year",
                         required = True,
                         help = "the smallest year for a birthday, must be > 0")
@@ -286,26 +302,33 @@ def main():
                         help = "the largest year for a birthday, must be > 0")
     parser.add_argument('-o', '--occur', type = int,
                         default = 2,
-                        help = "the number of times a birthday should be repeated in the samples"
-                               " of an iteration, must be < samples (default: 2)")
+                        help = "the number of times a birthday should be "
+                               "repeated in the samples of an iteration, must "
+                               "be < samples (default: 2)")
     args  = parser.parse_args()
 
     birthday = Birthday()
-    birthday.generate(args.iterations, args.samples, args.begin_year, args.end_year, args.occur)
+    birthday.generate(args.iterations, args.samples, args.begin_year, 
+                      args.end_year, args.occur)
     print(birthday)
 
     return 0
 
-def _param_error(iterations, samples, begin_year, end_year, occur, append):
+def _param_error(iterations, samples, begin_year, end_year, count, append):
     """Validate parameters.
 
-    iterations: int, the number of times to iterate in order to generate a number of birthdays
-                ('samples') per iteration.
-    samples   : int, the maximum number of birthdays generated in a single iteration
-    begin_year: int, the gererated random years should not be earlier than this year
-    end_year  : int, the gererated random years should not be later than this year
-    occur     : int, the number of times a single birthday should occur within a sample
-    append    : bool, if True append to current matches else just generate new ones
+    iterations: int, the number of times to iterate in order to generate
+                a number of birthdays ('samples') per iteration.
+    samples   : int, the maximum number of birthdays generated in a
+                single iteration
+    begin_year: int, the gererated random years should not be earlier
+                than this year
+    end_year  : int, the gererated random years should not be later than
+                this year
+    count     : int, the number of times a single birthday should occur
+                within a sample
+    append    : bool, if True append to current matches else generate
+                new ones
 
     exceptions: ValueError
     """
@@ -313,7 +336,7 @@ def _param_error(iterations, samples, begin_year, end_year, occur, append):
        not isinstance(samples, int) or \
        not isinstance(begin_year, int) or \
        not isinstance(end_year, int) or \
-       not isinstance(occur, int) or \
+       not isinstance(count, int) or \
        not isinstance(append, bool):
         raise ValueError("error: all parameters must be of type 'int' "
                          "except for 'append' which is 'bool'")
@@ -322,11 +345,12 @@ def _param_error(iterations, samples, begin_year, end_year, occur, append):
        samples < 2 or \
        begin_year < 1 or \
        end_year < 1 or \
-       occur < 2 or \
+       count < 2 or \
        begin_year > end_year or \
-       occur >= samples:
+       count >= samples:
         raise ValueError("error: all parameters must be > 0\n"
-                         "and 'occur' > 1\nand 'samples' > 1\nand 'occur' < 'samples'\n"
+                         "and 'occur' > 1\nand 'samples' > 1\n"
+                         "and 'occur' < 'samples'\n"
                          "and 'begin_year' <= 'end_year'")
 
 def _leap_year(year):

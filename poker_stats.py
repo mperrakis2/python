@@ -1,5 +1,5 @@
-"""This program calculates the probability of poker hands by generating a large number of random
-sample hands."""
+"""This program calculates the probability of poker hands by generating
+a large number of random sample hands."""
 import sys
 import timeit
 import argparse
@@ -7,10 +7,10 @@ import argparse
 import utility
 from poker_hand import PokerHand, Hand, Deck, Card
 
-# Inherit class that provides functionality for adding two instances of the derived class and
-# reference counting as well.
+# Inherit class that provides functionality for adding two instances of
+# the derived class and reference counting as well.
 class PokerStats(utility.AdderWithRefCount):
-    """Generate poker stats by generating random poker hands and classifying them."""
+    """Generate poker stats by classifying random poker hands."""
     NONE = 0
     UPDATE = 1
     APPEND = 2
@@ -19,43 +19,54 @@ class PokerStats(utility.AdderWithRefCount):
 
     def __init__(self):
         super().__init__()
-        self.__iterations = PokerStats.ITERATIONS # number of iterations to execute
-        self.__cards_per_hand = PokerHand.MAX_NUM_CARDS # number of cards in a sample hand
+
+        # number of iterations to execute
+        self.__iterations = PokerStats.ITERATIONS
+
+        # num of cards in a sample hand
+        self.__cards_per_hand = PokerHand.MAX_NUM_CARDS
         self.__operation = PokerStats.UPDATE # operation to execute
+
         # number of sample hands in a deck
         self.__hands_per_deck = PokerStats.CARDS_PER_DECK // self.__cards_per_hand
-        self.__histogram = {} # contains poker hand types and their frequencies
+
+        # contains poker hand types and their frequencies
+        self.__histogram = {}
         self.__samples = 0 # total number of sample hands generated
 
-    def update(self, iterations = ITERATIONS, cards_per_hand = PokerHand.MAX_NUM_CARDS):
-        """Generate poker hands, analyze them and store their frequencies.
+    def update(self, iterations = ITERATIONS,
+               cards_per_hand = PokerHand.MAX_NUM_CARDS):
+        """Generate and analyze poker hands and store their frequencies.
 
         Clear previously generated stats if any.
 
         iterations    : int, the number of iterations to execute
-        cards_per_hand: int, the number of cards in a generated sample hand
+        cards_per_hand: int, num of cards in a generated sample hand
 
         return: bool, True if stats were updated
         """
         return self.__generate(iterations, cards_per_hand)
 
-    def append(self, iterations = ITERATIONS, cards_per_hand = PokerHand.MAX_NUM_CARDS):
-        """Generate poker hands, analyze them and append their frequencies to existing stats.
+    def append(self, iterations = ITERATIONS, 
+               cards_per_hand = PokerHand.MAX_NUM_CARDS):
+        """Generate & analyze poker hands and append their frequencies.
 
         iterations    : int, the number of iterations to execute
-        cards_per_hand: int, the number of cards in a generated sample hand
+        cards_per_hand: int, num of cards in a generated sample hand
 
         return: bool, True if stats were appended
         """
-        return self.__generate(iterations, cards_per_hand, PokerStats.APPEND)
+        return self.__generate(iterations, cards_per_hand,
+                               PokerStats.APPEND)
 
     def print(self, operation = NONE, iterations = ITERATIONS,
               cards_per_hand = PokerHand.MAX_NUM_CARDS):
-        """Print existing or newly generated poker stats depending on the operation.
+        """Print current or newly generated poker stats depending on op.
 
-        operation     : int, the operation to execute, e.g. 'NONE' will print existing stats
+        operation     : int, op to execute, e.g. 'NONE' will print
+                        existing stats
         iterations    : int, the number of iterations to execute
-        cards_per_hand: int, the number of cards in a generated sample hand
+        cards_per_hand: int, num of cards in a generated sample hand
 
         return: bool, True if no error occured
         """
@@ -93,49 +104,51 @@ class PokerStats(utility.AdderWithRefCount):
 
         return: str, the statistics collected so far
         """
-        # The char width of the number of samples including commas. The number of samples is the
-        # largerst number so its width should accomodate for any number printed
-        int_width = self.__num_samples_width()
+        # Char width of num of samples including commas. Num of samples
+        # is largest num so its width is adequate for any num printed
+        int_width = self.__width_num_samples()
 
         # build the common part of the stats header
         common_header, str_width = self.__common_header(int_width)
 
         if self.__samples:
-            pstats = self.__header(common_header, str_width) # build the stats header
+            # build stats header
+            pstats = self.__header(common_header, str_width)
 
             # iterate over histogram and store its hand data in a string
             for htype, freq in sorted(self.__histogram.items()):
-                pstats += f"{PokerHand._LABELS[htype]:{PokerHand._LABEL_WIDTH}}: " \
-                          f"{freq:{int_width},} -> " \
+                pstats += f"{PokerHand._LABELS[htype]:{PokerHand._LABEL_WIDTH}}"\
+                          f": {freq:{int_width},} -> "\
                           f"{freq / self.__samples:8.3%}\n"
         else:
-            # if stats haven't been generated yet just print the values of data attributes as set
-            # in the constructor
+            # if stats haven't been generated yet just print the values
+            # of data attributes as set in the constructor
             pstats = self.__plain_header(common_header, str_width)
 
         return pstats
 
     def __repr__(self):
-        """Called when calling the representation (repr(pokerstats_obj)) of a poker stats object.
+        """Called when calling repr(obj) on a poker stats object.
 
-        return: str, the representation which allows a poker stats object to be identified
+        return: str, repr to allow poker stats object to be identified
         """
         return f"<type: {self.__class__.__module__}.{self.__class__.__name__},"\
                f" id: {id(self)}>"
 
-    def __call__(self, iterations = ITERATIONS, cards_per_hand = PokerHand.MAX_NUM_CARDS):
+    def __call__(self, iterations = ITERATIONS,
+                 cards_per_hand = PokerHand.MAX_NUM_CARDS):
         """See doc of returned method."""
         return self.update(iterations, cards_per_hand)
 
     def __bool__(self):
-        """Called when a poker stats object is used as a boolean in an expression.
+        """Called when poker stats obj is used as bool in expression.
 
         return: bool, see __len__()
         """
         return bool(self.__len__())
 
     def __len__(self):
-        """Called when calling the length (len(poker_stats_obj)) of a poker stats object.
+        """Called when calling len(obj) on a poker stats object.
 
         return: int, the number of poker hands generated
         """
@@ -158,7 +171,7 @@ class PokerStats(utility.AdderWithRefCount):
         return self._is_add(other) and self.__histogram == other.histogram
 
     def __iter__(self):
-        """Called whenever an iterator of a poker stats object is requested.
+        """Called whenever an iter of a poker stats object is requested.
 
         return: iterator object, a poker stats object iterator
         """
@@ -187,7 +200,7 @@ class PokerStats(utility.AdderWithRefCount):
                self.__cards_per_hand == other.cards_per_hand and \
                self.__operation == other.operation
 
-    def _op_add(self, other):
+    def _add(self, other):
         """Add a poker stats object to this one.
 
         other: PokerStats
@@ -198,32 +211,40 @@ class PokerStats(utility.AdderWithRefCount):
         self.__samples += len(other)
 
     def __generate(self, iterations, cards_per_hand, operation = UPDATE):
-        """Generate poker hands, analyze them and store their frequencies.
+        """Generate and analyze poker hands and store their frequencies.
 
         iterations    : int, the number of iterations to execute
-        cards_per_hand: int, the number of cards in a generated sample hand
-        operation     : int, the operation to execute, e.g. 'UPDATE' will generate new stats
+        cards_per_hand: int, num of cards in a generated sample hand
+        operation     : int, the operation to execute, e.g. 'UPDATE'
+                        will generate new stats
 
         return: bool, True if no parameter error
         """
-        if operation: # in case it's called by print() with operation = NONE
+        if operation: # in case called by print() with operation=NONE
             # check and store new parameters
             if self.__set(iterations, cards_per_hand, operation):
                 deck = Deck()
                 hand = PokerHand()
                 for i in range(self.__iterations):
                     deck.shuffle()
-                    for j in range(self.__hands_per_deck): # iterate over number of hands in a deck
-                        deck.move_cards(hand, self.__cards_per_hand) # add cards to sample hand
+                    # iterate over number of hands in a deck
+                    for j in range(self.__hands_per_deck):
+                        # add cards to sample hand
+                        deck.move_cards(hand, self.__cards_per_hand)
 
-                        # classify the hand and use False to enable performance optimizations
+                        # classify hand and use False to enable
+                        # performance optimizations
                         current_hand = hand.classify(normal_flow = False)
                         if current_hand: # if it's a valid hand
                             htype = current_hand[0] # get hand type
-                            self.__histogram.setdefault(htype, 0) # add to the hand type histogram
-                            self.__histogram[htype] += 1 # increment hand type frequency
 
-                        Hand.__init__(hand) # reset base class data attributes
+                            # add to the hand type histogram
+                            self.__histogram.setdefault(htype, 0)
+
+                            # increment hand type frequency
+                            self.__histogram[htype] += 1
+
+                        Hand.__init__(hand) # reset base class data attr
                     deck.__init__() # reset deck data attributes
 
                 self.__samples += self.__iterations * self.__hands_per_deck
@@ -236,7 +257,7 @@ class PokerStats(utility.AdderWithRefCount):
         """Set data attributes.
 
         iterations    : int, the number of iterations to execute
-        cards_per_hand: int, the number of cards in a generated sample hand
+        cards_per_hand: int, num of cards in a generated sample hand
         operation     : int, the operation to execute
 
         return: bool, True if no parameter error
@@ -244,15 +265,18 @@ class PokerStats(utility.AdderWithRefCount):
         if self.__iterations != iterations or \
            self.__cards_per_hand != cards_per_hand or \
            self.__operation != operation:
-            if _param_error(iterations, cards_per_hand, operation): # check for param errors
+            # check for param errors
+            if _param_error(iterations, cards_per_hand, operation):
                 return False
             if operation == PokerStats.APPEND and \
                self.__cards_per_hand != cards_per_hand and \
                self.__histogram:
-                # When appending, the new number of cards per sample hand has to be equal with the
-                # previous one to keep the statistics consistent. However, there's an error only if
-                # a histogram with different number of cards per hand already exists.
-                print("append error: current and new number of cards must be equal: "
+                # When appending, the new number of cards per sample
+                # hand has to be equal with the previous one to keep the
+                # statistics consistent. However, there's an error only
+                # if a histogram with different number of cards per hand
+                # already exists.
+                print("append error: current and new num of cards must be equal: "
                       f"{self.__cards_per_hand} != {cards_per_hand}")
                 return False
 
@@ -274,12 +298,12 @@ class PokerStats(utility.AdderWithRefCount):
         self.__samples = 0
         super().clear()
 
-    def __num_samples_width(self):
-        """Calculate the char width of the number of samples including commas.
+    def __width_num_samples(self):
+        """Calculate char width of the num of samples including commas.
 
-        return: int, the char width of the number of samples including commas
+        return: int, char width of the num of samples including commas
         """
-        digits = len(str(self.__samples)) # the number of digits in the number of samples
+        digits = len(str(self.__samples)) # num of digits in num of samples
         commas = digits // 3 # number of commas in the number of samples
 
         # add to the number of digits the number of commas
@@ -290,14 +314,15 @@ class PokerStats(utility.AdderWithRefCount):
 
         int_width: int, the char width to print numbers
 
-        return: tuple(str, int), the common part of the stats header and the char width of the
-                                 longest string
+        return: tuple(str, int), the common part of the stats header and
+                                 the char width of the longest string
         """
         # build the common part of stats
         common_header = "cards per hand" # longest string
         str_width = len(common_header) # width of longest string
         common_header = f"{common_header} = {self.__cards_per_hand}\n" \
-                        f"{'hands per deck':{str_width}} = {self.__hands_per_deck:<{int_width}}, "\
+                        f"{'hands per deck':{str_width}} = "\
+                        f"{self.__hands_per_deck:<{int_width}}, "\
                         f"({PokerStats.CARDS_PER_DECK} / {self.__cards_per_hand} = " \
                         "cards per deck / cards per hand)\n"
 
@@ -317,7 +342,8 @@ class PokerStats(utility.AdderWithRefCount):
         return f"{common_header}" \
                f"{'iterations':{width}} = {total_iterations:,}\n" \
                f"{'samples':{width}} = {self.__samples:,}, " \
-               f"({self.__hands_per_deck} * {total_iterations:,} = hands per deck * iterations)\n\n"
+               f"({self.__hands_per_deck} * {total_iterations:,} = hands per "\
+                "deck * iterations)\n\n"
 
     def __plain_header(self, common_header, width):
         """Build the stats header when no stats have been generated yet.
@@ -327,8 +353,8 @@ class PokerStats(utility.AdderWithRefCount):
 
         return: str, the stats header when no stats have been generated yet
         """
-        # if stats haven't been generated yet just print the values of data attributes as set in
-        # the constructor
+        # if stats haven't been generated yet just print the values of
+        # data attributes as set in the constructor
         return f"{common_header}" \
                f"{'iterations':{width}} = {self.__iterations:,}\n" \
                f"{'operation':{width}} = " \
@@ -337,10 +363,11 @@ class PokerStats(utility.AdderWithRefCount):
 _DESC = f"""\
 Calculate poker statistics by generating random poker hands and classifying them.
 
-A number of iterations is executed and in each iteration a number of random poker hands are
-generated per deck. The number of cards per deck is {PokerStats.CARDS_PER_DECK}. If cards == {PokerHand.MAX_NUM_CARDS} then {PokerStats.CARDS_PER_DECK // PokerHand.MAX_NUM_CARDS} ({PokerStats.CARDS_PER_DECK} / {PokerHand.MAX_NUM_CARDS}) random
-poker hands are generated per iteration. Thus, if iterations == {PokerStats.ITERATIONS} and cards == {PokerHand.MAX_NUM_CARDS} the total
-number of random poker hands generated is {PokerStats.ITERATIONS} * ({PokerStats.CARDS_PER_DECK} / {PokerHand.MAX_NUM_CARDS}) = {PokerStats.ITERATIONS * (PokerStats.CARDS_PER_DECK // PokerHand.MAX_NUM_CARDS)}.
+A number of iterations is executed and in each iteration a number of random poker
+hands are generated per deck. The number of cards per deck is {PokerStats.CARDS_PER_DECK}. If cards == {PokerHand.MAX_NUM_CARDS}
+then {PokerStats.CARDS_PER_DECK // PokerHand.MAX_NUM_CARDS} ({PokerStats.CARDS_PER_DECK} / {PokerHand.MAX_NUM_CARDS}) random poker hands are generated per iteration. Thus, if
+iterations == {PokerStats.ITERATIONS} and cards == {PokerHand.MAX_NUM_CARDS} the total number of random poker hands
+generated is {PokerStats.ITERATIONS} * ({PokerStats.CARDS_PER_DECK} / {PokerHand.MAX_NUM_CARDS}) = {PokerStats.ITERATIONS * (PokerStats.CARDS_PER_DECK // PokerHand.MAX_NUM_CARDS)}.
 """
 
 _EPILOG = f"""\
@@ -357,14 +384,15 @@ def main():
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter,
                                      description = _DESC, epilog = _EPILOG)
     parser.add_argument('-i', '--iterations', type = int, default = 10_000,
-                        help = "the number of iterations to run; must be > 0 (default: 10,000)")
+                        help = "the number of iterations to run; must be > 0\n"\
+                               "(default: 10,000)")
     parser.add_argument('-c', '--cards', type = int, default = PokerHand.MAX_NUM_CARDS,
                         help = "the number of cards per sample; must be within "
-                               f"[{PokerHand.MIN_NUM_CARDS}, {PokerHand.MAX_NUM_CARDS}] "
+                               f"[{PokerHand.MIN_NUM_CARDS}, {PokerHand.MAX_NUM_CARDS}]\n"
                                f"(default: {PokerHand.MAX_NUM_CARDS})")
     parser.add_argument('-r', '--repeat', type = int, default = 1,
                         help = "the number of times to repeat the iterations; "
-                               "used for performance testing only (default: 1)")
+                               "used for\nperformance testing only (default: 1)")
     args  = parser.parse_args()
 
     # check integer command line parameters
@@ -384,8 +412,8 @@ def main():
                                  number = args.repeat,
                                  globals = custom_namespace)
 
-        # the following is commented out but it is slightly faster as it does not involve a
-        # function call
+        # the following is commented out but it is slightly faster as it
+        # does not involve a function call
 
         #custom_namespace2 = {'PokerStats':PokerStats,
         #                     'iterations':args.iterations,
@@ -419,7 +447,7 @@ def _param_error(iterations, cards_per_hand, operation):
 
     exceptions: TypeError,  in case any of the parameters is not an int
                 ValueError, in case iterations < 1
-                            in case the number of cards is not within a valid range
+                            in case num of cards is not in a valid range
                             in case the operation is not a valid one
     """
     if not isinstance(iterations, int) or \

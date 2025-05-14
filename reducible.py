@@ -1,7 +1,8 @@
-"""This program produces a set of reducible words from a set of valid words. The set of valid words
-is read from a file. A valid word is reducible if by removing a letter the word that remains is
-still a valid word. Continuing this process until only one letter remains all intermediate words
-must be valid for the original to be reducible.
+"""This program produces a set of reducible words from a set of valid
+words. The set of valid words is read from a file. A valid word is
+reducible if by removing a letter the word that remains is still a valid
+word. Continuing this process until only one letter remains all
+intermediate words must be valid for the original to be reducible.
 """
 import sys
 import fileinput
@@ -9,10 +10,11 @@ import argparse
 
 import utility
 
-# Inherit class that provides functionality for adding two instances of the derived class and
-# reference counting as well.
+# Inherit class that provides functionality for adding two instances of
+# the derived class and reference counting as well.
 class Reducible(utility.AdderWithRefCount):
-    """Provides functionality to extract reducible words from a set of valid words."""
+    """Provides functionality to extract reducible words from a set of
+    valid words."""
     def __init__(self):
         """ctor"""
         super().__init__(False) # no reference counting
@@ -70,9 +72,9 @@ class Reducible(utility.AdderWithRefCount):
         return str(self.__longest)
 
     def __repr__(self):
-        """Called when calling the representation (repr(reducible_obj)) of a reducible object.
+        """Called when calling repr(obj) on a reducible object.
 
-        return: str, the representation which allows an object equal to this one to be created
+        return: str, repr to allow obj equal to this one to be created
         """
         obj = "reducible"
         obj_repr = f"{obj} = {self.__class__.__module__}.{self.__class__.__name__}()"
@@ -82,14 +84,14 @@ class Reducible(utility.AdderWithRefCount):
         return obj_repr
 
     def __bool__(self):
-        """Called when a reducible object is used as a boolean in an expression.
+        """Called when reducible obj is used as bool in expression.
 
         return: bool, see __len__()
         """
         return bool(self.__len__())
 
     def __len__(self):
-        """Called when calling the length (len(reducible_obj)) of a reducible object.
+        """Called when calling len(obj) on a reducible object.
 
         return: int, the number of longest reducible words
         """
@@ -112,7 +114,7 @@ class Reducible(utility.AdderWithRefCount):
         return self.__filenames == other.filenames
 
     def __iter__(self):
-        """Called whenever an iterator of a reducible object is requested.
+        """Called whenever iterator of reducible object is requested.
 
         return: iterator object, a reducible object iterator
         """
@@ -126,11 +128,12 @@ class Reducible(utility.AdderWithRefCount):
         return: str, a reducible word
 
         exceptions: TypeError, if key is of an inappropriate type
-                    IndexError, if key is of a value outside the set of indexes for the sequence
+                    IndexError, if key is of a value outside the set of 
+                                indexes for the sequence
         """
         return self.__longest[key]
 
-    def _op_add(self, other):
+    def _add(self, other):
         """Add two objects of type Reducible.
 
         other: Reducible
@@ -152,7 +155,10 @@ class Reducible(utility.AdderWithRefCount):
         self.__filenames = set()  # files read
 
     def __extract(self, word, words):
-        """If 'word' is reducible, add it and all its reducibles to a set of reducible words.
+        """Add 'word' to set of reducible words.
+
+        If 'word' is reducible, add it and its reducibles to set of 
+        reducible words.
 
         word : str
         words: set, a set of valid words
@@ -173,15 +179,16 @@ class Reducible(utility.AdderWithRefCount):
                 # create sub word
                 sub_word = word[:i] + word[i+1:]
 
-                # if the sub word is in the reducible set add the word to the stack and stop
-                # processing
+                # if the sub word is in the reducible set add the word
+                # to the stack and stop processing
                 if sub_word in self.__reducibles:
                     stack.append((i+1, word))
                     found = True
                     break
 
-                # If the sub word is a word then add the word it was produced from to the stack. If
-                # the sub word is empty then the original word and all its sub words are reducible.
+                # If sub word is word then add word it was produced from
+                # to stack. If sub word empty then original word and its
+                # sub words are reducible.
                 if sub_word in words or not sub_word:
                     stack.append((i+1, word))
                     if not sub_word:
@@ -194,22 +201,25 @@ class Reducible(utility.AdderWithRefCount):
             # if word is not reducible
             if not found and word != sub_word:
                 if stack:
-                    # pop the stack to continue processing from the last index of the last word
+                    # pop the stack to continue processing from the last
+                    # index of the last word
                     index, word = stack.pop()
                 else:
                     break # if there's no stack then we are done processing
 
-        # Add reducible words from the stack to the set of reducible words. Also if the longest
-        # word in the stack is longer or equal to the longest reducible word, add it to the list
-        # of longest reducible words.
+        # Add reducible words from the stack to the set of reducible
+        # words. Also if the longest word in the stack is longer or
+        # equal to the longest reducible word, add it to the list of
+        # longest reducible words.
         self.__add(stack, found)
 
         return found
 
     def __add(self, stack, found):
-        """Add a list of words that are reducible to the set of reducible words.
+        """Add word list that are reducible to set of reducible words.
 
-        Also, and add the longest reducible word, if any, to the list of longest reducible words.
+        Also, and add the longest reducible word, if any, to the list of
+        longest reducible words.
 
         stack: list of tuple(int, str)
                              int: index within the word
@@ -223,7 +233,8 @@ class Reducible(utility.AdderWithRefCount):
             # append the longest reducible word
             if not self.__longest or \
                len(stack[0][1]) >= len(self.__longest[-1]):
-                # in case more than one file has been read, check that the reducible already exists
+                # in case more than one file has been read, check that
+                # the reducible already exists
                 if stack[0][1] not in self.__longest:
                     self.__longest.append(stack[0][1])
 
@@ -236,9 +247,10 @@ class Reducible(utility.AdderWithRefCount):
                 self.__reducibles.add(frame[1])
 
 _DESC = """\
-Produce a set of reducible words from valid words read from files. A word is reducible if by
-removing a letter, the word that remains is still valid. Continuing this process until only one
-letter remains all intermediate words must be valid for the original to be reducible.
+Produce a set of reducible words from valid words read from files. A word is 
+reducible if by removing a letter, the word that remains is still valid.
+Continuing this process until only one letter remains all intermediate words
+must be valid for the original to be reducible.
 """
 
 def main():
@@ -248,7 +260,8 @@ def main():
     """
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter,
                                      description = _DESC)
-    parser.add_argument('files', nargs='+', metavar = 'file', help = "the file(s) to read")
+    parser.add_argument('files', nargs='+', metavar = 'file',
+                        help = "the file(s) to read")
     args  = parser.parse_args()
 
     reducible = Reducible()

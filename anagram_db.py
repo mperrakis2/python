@@ -1,6 +1,7 @@
-"""This program imports the anagrams module and uses it to retrive anagrams from text files. The
-anagrams are then stored to disk using the shelve standard python module. As an example, one of
-the stored anagrams is retrieved from the disk and displayed on screen.
+"""This program imports the anagrams module and uses it to retrive 
+anagrams from text files. The anagrams are then stored to disk using the
+shelve standard python module. As an example, one of the stored anagrams
+is retrieved from the disk and displayed on screen.
 """
 import sys
 import shelve
@@ -14,10 +15,14 @@ _READ = _STORE * 2
 _STORE_READ = _STORE | _READ
 _COMMANDS = (_STORE, _READ, _STORE_READ)
 
-# inherit from AbstractContextManager to get the default implementation of __enter__()
-# which just returns self
+# inherit from AbstractContextManager to get the default implementation
+# of __enter__() which just returns self
 class AnagramDB(contextlib.AbstractContextManager):
-    """Store and read anagrams to and from a DB using the standard Python library shelve."""
+    """Store and read anagrams to and from a DB.
+    
+    Uses the standard Python library shelve.
+    """
+
     def __init__(self, filename, command = _READ):
         """ctor
 
@@ -38,7 +43,7 @@ class AnagramDB(contextlib.AbstractContextManager):
 
         key: str, a word sorted in ascending order
 
-        return: list of str, i.e. the anagrams or None if key does not exist
+        return: list of str, the anagrams or None if key doesn't exist
 
         exceptions: TypeError, if key is not str
         """
@@ -46,7 +51,7 @@ class AnagramDB(contextlib.AbstractContextManager):
             raise TypeError("error: 'key' has to be of type 'str'")
 
         try:
-            return self.__anagram_db[key] # return value of key if it exists
+            return self.__anagram_db[key] # return key val if it exists
         except KeyError:
             print(f"key error: {key}")
             return None
@@ -75,21 +80,23 @@ class AnagramDB(contextlib.AbstractContextManager):
         return self.__anagram_db
 
     def __str__(self):
-        """Called when printing an anagram DB object.
+        """Called when printing an anagram DB obj.
 
         return: str, a formatted string containing all anagrams
         """
         return anagram.anagram_str(self.__anagram_db.values())
 
     def __repr__(self):
-        """Called when calling the representation (repr(anagram_db_obj)) of an anagram DB object.
+        """Called when calling repr(obj) on an anagram DB obj.
 
-        return: str, the representation which allows an object equal to this one to be created
+        return: str, the repr which allows an obj equal to this one to
+                be created
         """
-        return f"{self.__class__.__module__}.{self.__class__.__name__}('{self.__filename}')"
+        return f"{self.__class__.__module__}.{self.__class__.__name__}"\
+               f"('{self.__filename}')"
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Called right after the 'with' statement and before any exception is raised."""
+        """Called after 'with' statement and before any exc raised."""
         self.close()
 
     def __call__(self, key):
@@ -97,9 +104,9 @@ class AnagramDB(contextlib.AbstractContextManager):
         return self.read(key)
 
     def __len__(self):
-        """Called when calling the length (len(anagram_db_obj)) of an anagram DB object.
+        """Called when calling len(obj) on an anagram DB obj.
 
-        return: int, the length of the anagram_db object
+        return: int, the length of the anagram_db obj
         """
         return len(self.__anagram_db)
 
@@ -109,7 +116,7 @@ class AnagramDB(contextlib.AbstractContextManager):
         other: AnagramDB, the anagrams db to compare with
 
         return: bool or NotImplemented
-                bool          : True if the two anagram db objects are equal,
+                bool          : True if the anagram db objs are equal,
                 NotImplemented: if there's a parameter error
         """
         if not isinstance(other, AnagramDB):
@@ -130,9 +137,9 @@ class AnagramDB(contextlib.AbstractContextManager):
         return True
 
     def __iter__(self):
-        """Called whenever an iterator of an anagram DB object is requested.
+        """Called whenever an iter of an anagram DB obj is requested.
 
-        return: iterator object, an anagram_db object iterator
+        return: iterator obj, an anagram_db obj iterator
         """
         return iter(self.__anagram_db)
 
@@ -141,7 +148,7 @@ class AnagramDB(contextlib.AbstractContextManager):
 
         key: str, a word sorted in ascending order
 
-        return: list of str, i.e. the anagrams or None if key does not exist
+        return: list of str, the anagrams or None if key doesn't exist
 
         exceptions: TypeError, if key is not str
         """
@@ -152,7 +159,7 @@ def main():
 
     return: int, success or failure
     """
-    args = _cmdline()
+    args = _parse_cmdline()
 
     # get command type
     if 'type' in args:
@@ -182,10 +189,10 @@ Store and read anagrams to and from a DB file.
 {anagram._DESC_COMMON}
 """
 
-def _cmdline():
+def _parse_cmdline():
     """Validate command line arguments.
 
-    return: argparse.Namespace object
+    return: argparse.Namespace obj
     """
     # anagram db command line option
     parser_db = argparse.ArgumentParser(add_help = False)
@@ -195,39 +202,47 @@ def _cmdline():
     # sorted literal (key) command line option
     parser_key = argparse.ArgumentParser(add_help = False)
     parser_key.add_argument('-k', '--key', required = True,
-                            help = 'the sorted literal to read from the anagrams DB file')
+                            help = 'the sorted literal to read from the '
+                                   'anagrams DB file')
 
     # main parser
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter,
                                      description = _DESC,
-                                     epilog = 'for further help type: '
-                                              f'python {sys.argv[0]} <command> -h')
+                                     epilog = 'for further help type: python '
+                                              f'{sys.argv[0]} <command> -h')
 
     # subparsers for the different commands
     subparsers = parser.add_subparsers(title = 'DB commands',
-                                       description = "The following commands allow you to "
-                                                     "store, read or store & read anagrams.",
+                                       description = "The following commands "
+                                                     "allow you to store, read "
+                                                     "or store & read anagrams.",
                                        help = 'DESCRIPTION', required = True)
 
     # create the parser for the "store" command
-    parser_s = subparsers.add_parser('store', aliases = ['s'], parents = [parser_db],
+    parser_s = subparsers.add_parser('store', aliases = ['s'],
+                                     parents = [parser_db],
                                      formatter_class = argparse.RawTextHelpFormatter,
-                                     help = 'read text files and store anagrams in a DB file')
-    parser_s.add_argument('-t', '--type', type = int, choices = [1, 2, 4], default = 1,
-                          help = anagram._HELP_ANAGRAM_TYPE)
-    parser_s.add_argument('-i', '--input', nargs='+', required = True, help = anagram._HELP_INPUT)
+                                     help = 'read text files and store '
+                                            'anagrams in a DB file')
+    parser_s.add_argument('-t', '--type', type = int, choices = [1, 2, 4],
+                          default = 1, help = anagram._HELP_ANAGRAM_TYPE)
+    parser_s.add_argument('-i', '--input', nargs='+', required = True, 
+                          help = anagram._HELP_INPUT)
 
     # create the parser for the "read" command
-    subparsers.add_parser('read', aliases = ['r'], parents = [parser_db, parser_key],
+    subparsers.add_parser('read', aliases = ['r'],
+                          parents = [parser_db, parser_key],
                           formatter_class = argparse.RawTextHelpFormatter,
-                          help = 'use a sorted literal to read all its anagrams from a DB file')
+                          help = 'use a sorted literal to read all its '
+                                 'anagrams from a DB file')
 
-    # create the parser for the "store & read" command, set add_help = False, as help command line
-    # options are provided by the parent
+    # create parser for "store & read" command, set add_help = False, as
+    # help command line options are provided by the parent
     subparsers.add_parser('store-read', aliases = ['sr'], add_help = False,
                           parents = [parser_s, parser_key],
                           formatter_class = argparse.RawTextHelpFormatter,
-                          help = 'store first and then read (combination of the commands above)')
+                          help = 'store first and then read (combination of '
+                                 'the commands above)')
 
     return parser.parse_args()
 

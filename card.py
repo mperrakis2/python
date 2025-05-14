@@ -1,7 +1,6 @@
 """This module contains a code example related to
-Think Python, 2nd Edition
-by Allen Downey
-http://thinkpython2.com
+
+Think Python, 2nd Edition by Allen Downey, http://thinkpython2.com
 Copyright 2015 Allen Downey
 License: http://creativecommons.org/licenses/by/4.0/
 """
@@ -30,7 +29,8 @@ class Card:
 
     def __str__(self):
         """Returns a human-readable string representation."""
-        return f"{Card.rank_names[self.rank]}" f"{Card.QUALIFIER}" f"{Card.suit_names[self.suit]}"
+        return f"{Card.rank_names[self.rank]}" f"{Card.QUALIFIER}"\
+               f"{Card.suit_names[self.suit]}"
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.suit}, {self.rank})"
@@ -79,7 +79,7 @@ class Deck:
         self.cards.append(card)
 
     def remove_card(self, card):
-        """Removes a card from the deck or raises exception if it is not there.
+        """Removes card from deck or raises exception if not there.
 
         card: Card
         """
@@ -117,9 +117,9 @@ class Hand(Deck):
 
 
 def find_defining_class(obj, method_name):
-    """Finds and returns the class object that will provide 
-    the definition of method_name (as a string) if it is
-    invoked on obj.
+    """Finds and returns the class object that will provide the
+    definition of method_name (as a string) if it is invoked on obj.
+
     obj: any python object
     method_name: string method name
     """
