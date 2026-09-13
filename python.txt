@@ -1,7 +1,6 @@
 next
 ----
 * docker
-* git (book, links)
 
 python books
 ------------

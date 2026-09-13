@@ -1,0 +1,11 @@
+# scratch code, not part of the repo
+test.py
+
+# shelve databases, recreated by anagram_db.py
+anagram*.dat
+anagram*.dir
+anagram*.bak
+
+# python bytecode
+__pycache__/
+*.py[cod]
