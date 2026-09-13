@@ -47,7 +47,7 @@ class PokerStats(utility.AdderWithRefCount):
         """
         return self.__generate(iterations, cards_per_hand)
 
-    def append(self, iterations = ITERATIONS, 
+    def append(self, iterations = ITERATIONS,
                cards_per_hand = PokerHand.MAX_NUM_CARDS):
         """Generate & analyze poker hands and append their frequencies.
 
@@ -225,10 +225,10 @@ class PokerStats(utility.AdderWithRefCount):
             if self.__set(iterations, cards_per_hand, operation):
                 deck = Deck()
                 hand = PokerHand()
-                for i in range(self.__iterations):
+                for _ in range(self.__iterations):
                     deck.shuffle()
                     # iterate over number of hands in a deck
-                    for j in range(self.__hands_per_deck):
+                    for _ in range(self.__hands_per_deck):
                         # add cards to sample hand
                         deck.move_cards(hand, self.__cards_per_hand)
 
@@ -245,7 +245,7 @@ class PokerStats(utility.AdderWithRefCount):
                             self.__histogram[htype] += 1
 
                         Hand.__init__(hand) # reset base class data attr
-                    deck.__init__() # reset deck data attributes
+                    deck = Deck() # reset deck data attributes
 
                 self.__samples += self.__iterations * self.__hands_per_deck
 
@@ -360,14 +360,19 @@ class PokerStats(utility.AdderWithRefCount):
                f"{'operation':{width}} = " \
                f"{'UPDATE' if self.__operation == PokerStats.UPDATE else 'APPEND'}\n"
 
+_CARDS = PokerStats.CARDS_PER_DECK
+_MAX = PokerHand.MAX_NUM_CARDS
+_HANDS = _CARDS // _MAX
+_ITER = PokerStats.ITERATIONS
+
 _DESC = f"""\
 Calculate poker statistics by generating random poker hands and classifying them.
 
 A number of iterations is executed and in each iteration a number of random poker
-hands are generated per deck. The number of cards per deck is {PokerStats.CARDS_PER_DECK}. If cards == {PokerHand.MAX_NUM_CARDS}
-then {PokerStats.CARDS_PER_DECK // PokerHand.MAX_NUM_CARDS} ({PokerStats.CARDS_PER_DECK} / {PokerHand.MAX_NUM_CARDS}) random poker hands are generated per iteration. Thus, if
-iterations == {PokerStats.ITERATIONS} and cards == {PokerHand.MAX_NUM_CARDS} the total number of random poker hands
-generated is {PokerStats.ITERATIONS} * ({PokerStats.CARDS_PER_DECK} / {PokerHand.MAX_NUM_CARDS}) = {PokerStats.ITERATIONS * (PokerStats.CARDS_PER_DECK // PokerHand.MAX_NUM_CARDS)}.
+hands are generated per deck. The number of cards per deck is {_CARDS}. If cards == {_MAX}
+then {_HANDS} ({_CARDS} / {_MAX}) random poker hands are generated per iteration. Thus, if
+iterations == {_ITER} and cards == {_MAX} the total number of random poker hands
+generated is {_ITER} * ({_CARDS} / {_MAX}) = {_ITER * _HANDS}.
 """
 
 _EPILOG = f"""\

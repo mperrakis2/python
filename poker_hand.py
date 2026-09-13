@@ -26,7 +26,7 @@ class PokerHand(Hand):
     MAX_NUM_CARDS = 7 # max number of cards in a hand
 
     _LABELS = ("high card", "pair", "two pair", "three of a kind", "straight",
-               "flush", "full house", "four of a kind", "straight flush", 
+               "flush", "full house", "four of a kind", "straight flush",
                "rest of hand")
     _LABEL_WIDTH = len(max(_LABELS, key = len)) # max width of hand label
 
@@ -231,7 +231,7 @@ class PokerHand(Hand):
 
         return: bool or NotImplemented
                 bool          : True if two poker hands are equal
-                NotImplemented: if there's a param error or any hand is 
+                NotImplemented: if there's a param error or any hand is
                                 incomplete
         """
         if not isinstance(other, PokerHand):
@@ -247,7 +247,7 @@ class PokerHand(Hand):
         # must be equal as well.
         if self.__hand and other_hand:
             # hands have the same type and same cards based on rank
-            if self.__hand[0] == other_hand[0] and _eq(self.__hand[1], 
+            if self.__hand[0] == other_hand[0] and _eq(self.__hand[1],
                                                        other_hand[1]):
                 # compare rest of hand if it exists
                 return _eq(self.__hand[2], other_hand[2]) \
@@ -323,7 +323,7 @@ class PokerHand(Hand):
         return: Card
 
         exceptions: TypeError, if key is of an inappropriate type
-                    IndexError, if key is of a value outside the set of 
+                    IndexError, if key is of a value outside the set of
                     indexes for the sequence
         """
         return self.__hand[key]
@@ -402,7 +402,7 @@ class PokerHand(Hand):
                         hand.insert(0, hand.pop())
 
                         # add straight flush
-                        self.__add(PokerHand.STRAIGHT_FLUSH, 
+                        self.__add(PokerHand.STRAIGHT_FLUSH,
                                    hand[:PokerHand.__SEQUENCE])
                         return
 
@@ -419,7 +419,7 @@ class PokerHand(Hand):
                                          PokerHand.__SEQUENCE - 1
                         if hand[i].rank == high_card_rank:
                             # add straight flush
-                            self.__add(PokerHand.STRAIGHT_FLUSH, 
+                            self.__add(PokerHand.STRAIGHT_FLUSH,
                                        hand[i : i+PokerHand.__SEQUENCE])
                             return
 
@@ -433,7 +433,7 @@ class PokerHand(Hand):
 
     def __rank(self):
         """Add rank hand.
-        
+
         3 or 4 of a kind, full house, straight, one or two pair.
         """
         if not self.__hand:
@@ -461,26 +461,44 @@ class PokerHand(Hand):
             if ace:
                 ranks.insert(0, ranks.pop())
 
-            three = []
-            pairs = []
-            for hand in ranks:
-                match len(hand[1]):
-                    case 2: # pair, add potential full house
-                        if self.__full_house(hand[1], pairs, three):
-                            return
-                    case 3: # three of a kind, add potential full house
-                        if self.__full_house(hand[1], three, pairs):
-                            return
-                    case 4: # add 4 of a kind
-                        self.__add(PokerHand.FOUR_OF_A_KIND, hand[1])
-                        return
+            kinds = self.__kinds(ranks)
+            if kinds is None: # a hand was added already
+                return
 
+            three, pairs = kinds
             if len(pairs) == 2: # add pair
                 self.__add(PokerHand.PAIR, pairs)
             elif pairs: # add two pair
                 self.__add(PokerHand.TWO_PAIR, pairs[:4])
             elif three: # add 3 of a kind
                 self.__add(PokerHand.THREE_OF_A_KIND, three)
+
+    def __kinds(self, ranks):
+        """Add 4 of a kind or a full house if either exists.
+
+        ranks: list of tuple, tuple is rank of hand and hand itself,
+                              i.e. tuple -> (int, list of Card)
+
+        return: tuple(list of Card, list of Card) or None
+                tuple: the three of a kind and the pairs found, either
+                       of which may be empty
+                None : if a hand was added
+        """
+        three = []
+        pairs = []
+        for hand in ranks:
+            match len(hand[1]):
+                case 2: # pair, add potential full house
+                    if self.__full_house(hand[1], pairs, three):
+                        return None
+                case 3: # three of a kind, add potential full house
+                    if self.__full_house(hand[1], three, pairs):
+                        return None
+                case 4: # add 4 of a kind
+                    self.__add(PokerHand.FOUR_OF_A_KIND, hand[1])
+                    return None
+
+        return three, pairs
 
     def __straight(self, ranks, ace):
         """Add a straight hand.
@@ -531,11 +549,11 @@ class PokerHand(Hand):
         """Add a potential full house.
 
         hand:               list of Card, the hand
-        same_hand:          list of Card, hand with same hand type as 
+        same_hand:          list of Card, hand with same hand type as
                             'hand'
-        complementary_hand: list of Card, hand that is complement of 
+        complementary_hand: list of Card, hand that is complement of
                             'hand', e.g. if 'hand' is a pair then
-                            'complementary_hand' could be a three of a 
+                            'complementary_hand' could be a three of a
                             kind so that 3 + 2 = full house
 
         return: bool, True if a full house was added
@@ -587,7 +605,7 @@ class PokerHand(Hand):
         """ Add the rest of the hand, if any, to the hand.
 
         The rest of the hand are cards that when added to the hand make
-        up a total of MIN_NUM_CARDS cards. Thus, 
+        up a total of MIN_NUM_CARDS cards. Thus,
         'hand + rest = MIN_NUM_CARDS'. This is required, as it is a rule
         of Poker.
         """
@@ -605,7 +623,7 @@ class PokerHand(Hand):
 
                 # the remaining cards are part of the rest of the hand
                 # and are sorted descendingly by rank
-                self.__cards_copy.sort(key=lambda card: card.rank, 
+                self.__cards_copy.sort(key=lambda card: card.rank,
                                        reverse = True)
 
                 # if an ace exists, add it to the top of the list
@@ -697,7 +715,7 @@ def _lt(cards, other_cards):
     cards      : list of Card, list of cards of one hand
     other_cards: list of Card, list of cards of the other hand
 
-    return: None or bool, True if cards are smaller, False if greater 
+    return: None or bool, True if cards are smaller, False if greater
                           and None if equal
     """
     for card, other_card in zip(cards, other_cards):
